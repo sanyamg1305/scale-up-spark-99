@@ -63,10 +63,10 @@
 
 @layer utilities {
   .gold-glow {
-    box-shadow: 0 0 30px hsl(var(--gold) / 0.15), 0 0 60px hsl(var(--gold) / 0.05);
+    box-shadow: 0 0 30px hsl(var(--coral) / 0.2), 0 0 60px hsl(var(--coral) / 0.08);
   }
 
   .gold-text-glow {
-    text-shadow: 0 0 20px hsl(var(--gold) / 0.4);
+    text-shadow: 0 0 20px hsl(var(--coral) / 0.4);
   }
 }
