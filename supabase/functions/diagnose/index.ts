@@ -9,39 +9,54 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { situation } = await req.json();
-    if (!situation || typeof situation !== "string") {
-      return new Response(JSON.stringify({ error: "Please describe your business situation." }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const body = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `You are a business diagnostic AI. Analyze the founder's business situation and return a JSON object with exactly this structure:
+    // Build context from structured inputs
+    const lines: string[] = [];
+    if (body.revenue_trend) lines.push(`Revenue trend: ${body.revenue_trend}`);
+    if (body.growth_speed) lines.push(`Growth speed: ${body.growth_speed}`);
+    if (body.team_motivation) lines.push(`Team motivation: ${body.team_motivation}`);
+    if (body.team_stability) lines.push(`Team stability: ${body.team_stability}`);
+    if (body.process_clarity) lines.push(`Process clarity: ${body.process_clarity}`);
+    if (body.firefighting_frequency) lines.push(`Firefighting frequency: ${body.firefighting_frequency}`);
+    if (body.founder_dependency) lines.push(`Founder dependency: ${body.founder_dependency}`);
+    if (body.delegation_level) lines.push(`Delegation level: ${body.delegation_level}`);
+    if (body.vision_clarity) lines.push(`Vision clarity: ${body.vision_clarity}`);
+    if (body.team_alignment) lines.push(`Team alignment with vision: ${body.team_alignment}`);
+    if (body.founder_emotional_state) lines.push(`Founder emotional state: ${body.founder_emotional_state}`);
+    if (body.situation) lines.push(`\nAdditional context: ${body.situation}`);
 
-{
-  "state": "Burnout" | "Survival Stagnation" | "Success, Scale & Joy",
-  "entrepreneurship_score": <number 0-100>,
-  "consciousness_score": <number 0-100>,
-  "problems": [<string>, <string>, ...],
-  "open_loop": "<main missing system>",
-  "next_move": "<clear actionable step>"
-}
+    if (lines.length === 0) {
+      return new Response(JSON.stringify({ error: "Please complete the form." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const userMessage = lines.join("\n");
+
+    const systemPrompt = `You are a business diagnostic engine based on the Conscious Entrepreneurship framework.
+
+Analyze the user's business inputs and return structured output.
 
 Scoring rules:
-- Entrepreneurship Score: Based on ambition, growth trajectory, action-taking, revenue signals
-- Consciousness Score: Based on purpose clarity, team alignment, self-awareness, systems thinking
+- Entrepreneurship Score (0-100): Based on revenue trend, growth speed, action-taking, execution
+- Consciousness Score (0-100): Based on vision clarity, team alignment, founder emotional state, purpose
 
 State mapping:
 - High Entrepreneurship (>60) + Low Consciousness (<40) → Burnout
 - Both Low (<40) → Survival Stagnation
 - Both High (>60) → Success, Scale & Joy
-- Mixed scores → use judgment based on context
+- Mixed → use judgment
 
-Keep problems to 2-4 bullet points. Be concise, practical, founder-friendly. No jargon.`;
+Requirements:
+- 3 key insights (short bullet points about what's happening)
+- 2-4 open loops (missing systems like "Delegation System", "Culture Alignment")
+- 3 gamified quests with name, objective, action (specific), reward (business outcome)
+
+Be concise, actionable, founder-friendly. No jargon.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -53,7 +68,7 @@ Keep problems to 2-4 bullet points. Be concise, practical, founder-friendly. No 
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: situation },
+          { role: "user", content: userMessage },
         ],
         tools: [
           {
@@ -67,11 +82,24 @@ Keep problems to 2-4 bullet points. Be concise, practical, founder-friendly. No 
                   state: { type: "string", enum: ["Burnout", "Survival Stagnation", "Success, Scale & Joy"] },
                   entrepreneurship_score: { type: "number" },
                   consciousness_score: { type: "number" },
-                  problems: { type: "array", items: { type: "string" } },
-                  open_loop: { type: "string" },
-                  next_move: { type: "string" },
+                  insights: { type: "array", items: { type: "string" } },
+                  open_loops: { type: "array", items: { type: "string" } },
+                  quests: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        name: { type: "string" },
+                        objective: { type: "string" },
+                        action: { type: "string" },
+                        reward: { type: "string" },
+                      },
+                      required: ["name", "objective", "action", "reward"],
+                      additionalProperties: false,
+                    },
+                  },
                 },
-                required: ["state", "entrepreneurship_score", "consciousness_score", "problems", "open_loop", "next_move"],
+                required: ["state", "entrepreneurship_score", "consciousness_score", "insights", "open_loops", "quests"],
                 additionalProperties: false,
               },
             },
