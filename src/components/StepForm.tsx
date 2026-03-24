@@ -11,8 +11,8 @@ export interface FormData {
   founder_dependency: string;
   delegation_level: string;
   vision_clarity: string;
-  team_alignment: string;
-  founder_emotional_state: string;
+  stress_level: string;
+  emotional_control: string;
   situation: string;
 }
 
@@ -26,8 +26,8 @@ const INITIAL: FormData = {
   founder_dependency: "",
   delegation_level: "",
   vision_clarity: "",
-  team_alignment: "",
-  founder_emotional_state: "",
+  stress_level: "",
+  emotional_control: "",
   situation: "",
 };
 
@@ -36,127 +36,170 @@ interface StepFormProps {
   onBack: () => void;
 }
 
-const steps = [
+interface Question {
+  key: keyof FormData;
+  label: string;
+  options: string[];
+}
+
+interface Step {
+  title: string;
+  icon: string;
+  questions: Question[];
+  hasTextarea?: boolean;
+}
+
+const steps: Step[] = [
   {
     title: "Growth Engine",
     icon: "🚀",
-    fields: [
+    questions: [
       {
-        key: "revenue_trend" as const,
-        label: "Revenue Trend",
-        options: ["Declining", "Flat", "Slow Growth", "Fast Growth", "Explosive Growth"],
+        key: "revenue_trend",
+        label: "How is your revenue trending?",
+        options: ["Declining", "Flat", "Slow Growth", "Fast Growth"],
       },
       {
-        key: "growth_speed" as const,
-        label: "Growth Speed",
-        options: ["Stagnant", "Slow", "Moderate", "Fast", "Hypergrowth"],
+        key: "growth_speed",
+        label: "How fast are you actually growing?",
+        options: ["Stagnant", "Crawling", "Moderate", "Hypergrowth"],
       },
     ],
   },
   {
     title: "Team Dynamics",
     icon: "👥",
-    fields: [
+    questions: [
       {
-        key: "team_motivation" as const,
-        label: "Team Motivation",
-        options: ["Very Low", "Low", "Neutral", "High", "Very High"],
+        key: "team_motivation",
+        label: "How motivated is your team right now?",
+        options: ["Checked Out", "Going Through Motions", "Engaged", "On Fire"],
       },
       {
-        key: "team_stability" as const,
-        label: "Team Stability",
-        options: ["High Turnover", "Some Turnover", "Stable", "Very Stable", "Rock Solid"],
+        key: "team_stability",
+        label: "How stable is your team?",
+        options: ["Revolving Door", "Some Turnover", "Stable", "Rock Solid"],
       },
     ],
   },
   {
     title: "Systems & Operations",
     icon: "⚙️",
-    fields: [
+    questions: [
       {
-        key: "process_clarity" as const,
-        label: "Process Clarity",
-        options: ["No Processes", "Ad Hoc", "Some SOPs", "Well Documented", "Fully Systematized"],
+        key: "process_clarity",
+        label: "How clear are your processes?",
+        options: ["Total Chaos", "Ad Hoc", "Some SOPs", "Fully Systematized"],
       },
       {
-        key: "firefighting_frequency" as const,
-        label: "Firefighting Frequency",
-        options: ["Constant", "Daily", "Weekly", "Occasionally", "Rarely"],
+        key: "firefighting_frequency",
+        label: "How often are you firefighting?",
+        options: ["All Day Every Day", "Daily", "Weekly", "Rarely"],
       },
     ],
   },
   {
     title: "Leadership Load",
     icon: "👑",
-    fields: [
+    questions: [
       {
-        key: "founder_dependency" as const,
-        label: "Founder Dependency",
-        options: ["Everything Needs Me", "Most Things", "About Half", "Limited", "Minimal"],
+        key: "founder_dependency",
+        label: "How dependent is the business on you?",
+        options: ["Nothing Works Without Me", "Most Things Need Me", "Some Things", "Runs Without Me"],
       },
       {
-        key: "delegation_level" as const,
-        label: "Delegation Level",
-        options: ["None", "Minimal", "Moderate", "Strong", "Fully Delegated"],
+        key: "delegation_level",
+        label: "How well do you delegate?",
+        options: ["I Do Everything", "Barely Delegate", "Moderate", "Strong Delegation"],
       },
     ],
   },
   {
-    title: "Purpose & Vision",
+    title: "Consciousness",
     icon: "🧭",
-    fields: [
+    questions: [
       {
-        key: "vision_clarity" as const,
-        label: "Vision Clarity",
-        options: ["No Clear Vision", "Vague", "Somewhat Clear", "Clear", "Crystal Clear"],
+        key: "vision_clarity",
+        label: "How clear is your vision?",
+        options: ["No Clue", "Vague Idea", "Fairly Clear", "Crystal Clear"],
       },
       {
-        key: "team_alignment" as const,
-        label: "Team Alignment with Vision",
-        options: ["Completely Misaligned", "Partially Aligned", "Neutral", "Mostly Aligned", "Fully Aligned"],
+        key: "stress_level",
+        label: "What's your stress level?",
+        options: ["Breaking Point", "Constantly Stressed", "Manageable", "Calm & Focused"],
       },
       {
-        key: "founder_emotional_state" as const,
-        label: "Founder Emotional State",
-        options: ["Burned Out", "Stressed", "Coping", "Energized", "Thriving"],
+        key: "emotional_control",
+        label: "How's your emotional control?",
+        options: ["Reactive Mess", "Often Triggered", "Mostly Steady", "Fully Grounded"],
       },
     ],
   },
   {
-    title: "Open Input",
+    title: "Your Situation",
     icon: "✍️",
-    fields: [],
+    questions: [],
     hasTextarea: true,
   },
 ];
 
+// Flatten all questions for one-per-screen navigation
+interface FlatStep {
+  stepIndex: number;
+  title: string;
+  icon: string;
+  question?: Question;
+  hasTextarea?: boolean;
+}
+
+const flatSteps: FlatStep[] = [];
+steps.forEach((step, si) => {
+  if (step.questions.length > 0) {
+    step.questions.forEach((q) => {
+      flatSteps.push({ stepIndex: si, title: step.title, icon: step.icon, question: q });
+    });
+  }
+  if (step.hasTextarea) {
+    flatSteps.push({ stepIndex: si, title: step.title, icon: step.icon, hasTextarea: true });
+  }
+});
+
 const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
-  const [step, setStep] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [data, setData] = useState<FormData>(INITIAL);
 
-  const current = steps[step];
-  const totalSteps = steps.length;
-  const progress = ((step + 1) / totalSteps) * 100;
+  const current = flatSteps[currentIndex];
+  const total = flatSteps.length;
+  const progress = ((currentIndex + 1) / total) * 100;
 
-  const isStepComplete = () => {
-    if (current.hasTextarea) return true; // text is optional
-    return current.fields.every((f) => data[f.key] !== "");
+  const canProceed = () => {
+    if (current.hasTextarea) return true;
+    if (current.question) return data[current.question.key] !== "";
+    return true;
   };
 
   const next = () => {
-    if (step < totalSteps - 1) setStep(step + 1);
+    if (currentIndex < total - 1) setCurrentIndex(currentIndex + 1);
     else onSubmit(data);
   };
 
   const prev = () => {
-    if (step > 0) setStep(step - 1);
+    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
     else onBack();
+  };
+
+  const selectOption = (key: keyof FormData, value: string) => {
+    setData({ ...data, [key]: value });
+    // Auto-advance after selection with a small delay
+    setTimeout(() => {
+      if (currentIndex < total - 1) setCurrentIndex(currentIndex + 1);
+    }, 300);
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Progress bar */}
-      <div className="w-full h-1 bg-secondary">
+      <div className="w-full h-1.5 bg-secondary">
         <div
           className="h-full bg-primary transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
@@ -164,79 +207,76 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
       </div>
 
       {/* Step indicator */}
-      <div className="container max-w-2xl pt-6 pb-2">
+      <div className="container max-w-2xl pt-6 pb-2 px-6">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <button onClick={prev} className="hover:text-foreground transition-colors">
+          <button onClick={prev} className="hover:text-foreground transition-colors font-medium">
             ← Back
           </button>
-          <span className="font-display font-semibold uppercase tracking-widest">
-            Step {step + 1} of {totalSteps}
+          <span className="font-display font-semibold uppercase tracking-[0.2em]">
+            {current.icon} {current.title}
           </span>
-          <span />
+          <span className="tabular-nums">{currentIndex + 1}/{total}</span>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-start justify-center px-6 pt-8 pb-20">
-        <div className="w-full max-w-2xl space-y-8 animate-in fade-in slide-in-from-right-4 duration-300" key={step}>
-          {/* Step header */}
-          <div className="space-y-2">
-            <span className="text-3xl">{current.icon}</span>
-            <h2 className="font-display text-2xl font-bold text-foreground">{current.title}</h2>
-          </div>
-
-          {/* Fields */}
-          <div className="space-y-6">
-            {current.fields.map((field) => (
-              <div key={field.key} className="space-y-3">
-                <label className="block text-sm font-medium text-muted-foreground">
-                  {field.label}
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {field.options.map((opt) => (
+      <div className="flex-1 flex items-center justify-center px-6 pb-20">
+        <div
+          className="w-full max-w-lg space-y-8 animate-in fade-in slide-in-from-right-4 duration-300"
+          key={currentIndex}
+        >
+          {/* Question with card options */}
+          {current.question && (
+            <div className="space-y-6">
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                {current.question.label}
+              </h2>
+              <div className="grid gap-3">
+                {current.question.options.map((opt) => {
+                  const isSelected = data[current.question!.key] === opt;
+                  return (
                     <button
                       key={opt}
-                      onClick={() => setData({ ...data, [field.key]: opt })}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
-                        data[field.key] === opt
-                          ? "bg-primary text-primary-foreground border-primary gold-glow"
-                          : "bg-card text-foreground border-border hover:border-primary/50"
+                      onClick={() => selectOption(current.question!.key, opt)}
+                      className={`w-full text-left px-5 py-4 rounded-xl text-base font-medium transition-all duration-200 border-2 ${
+                        isSelected
+                          ? "bg-primary/15 text-primary border-primary gold-glow"
+                          : "bg-card text-foreground border-border hover:border-primary/40 hover:bg-card/80"
                       }`}
                     >
                       {opt}
                     </button>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
-            ))}
+            </div>
+          )}
 
-            {current.hasTextarea && (
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-muted-foreground">
-                  Describe your current business situation
-                </label>
-                <textarea
-                  value={data.situation}
-                  onChange={(e) => setData({ ...data, situation: e.target.value })}
-                  placeholder="Revenue is growing fast, but my team keeps quitting and everything feels chaotic..."
-                  className="w-full min-h-[160px] rounded-lg border border-input bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring resize-y font-body"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Navigation */}
-          <div className="flex justify-end pt-4">
-            <Button
-              variant="gold"
-              size="lg"
-              onClick={next}
-              disabled={!isStepComplete()}
-              className="px-10"
-            >
-              {step === totalSteps - 1 ? "Run Diagnosis" : "Next →"}
-            </Button>
-          </div>
+          {/* Textarea step */}
+          {current.hasTextarea && (
+            <div className="space-y-6">
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                Describe your current business situation
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                Be honest. The more real you are, the sharper your diagnosis.
+              </p>
+              <textarea
+                value={data.situation}
+                onChange={(e) => setData({ ...data, situation: e.target.value })}
+                placeholder="Revenue is growing but my team keeps quitting. I'm working 14 hour days and nothing feels scalable..."
+                className="w-full min-h-[180px] rounded-xl border-2 border-border bg-card px-5 py-4 text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary focus:ring-0 resize-y font-body transition-colors"
+              />
+              <Button
+                variant="gold"
+                size="lg"
+                onClick={next}
+                className="w-full py-6 text-base"
+              >
+                Run Diagnosis →
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
