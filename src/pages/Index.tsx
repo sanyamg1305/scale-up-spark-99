@@ -32,7 +32,6 @@ const Index = () => {
         return;
       }
 
-      // Add minimum delay for premium feel
       await new Promise((r) => setTimeout(r, 2000));
       setResult(res as DiagnosisResult);
       setScreen("results");

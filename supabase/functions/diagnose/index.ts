@@ -14,7 +14,6 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    // Build context from structured inputs
     const lines: string[] = [];
     if (body.revenue_trend) lines.push(`Revenue trend: ${body.revenue_trend}`);
     if (body.growth_speed) lines.push(`Growth speed: ${body.growth_speed}`);
@@ -25,8 +24,8 @@ serve(async (req) => {
     if (body.founder_dependency) lines.push(`Founder dependency: ${body.founder_dependency}`);
     if (body.delegation_level) lines.push(`Delegation level: ${body.delegation_level}`);
     if (body.vision_clarity) lines.push(`Vision clarity: ${body.vision_clarity}`);
-    if (body.team_alignment) lines.push(`Team alignment with vision: ${body.team_alignment}`);
-    if (body.founder_emotional_state) lines.push(`Founder emotional state: ${body.founder_emotional_state}`);
+    if (body.stress_level) lines.push(`Stress level: ${body.stress_level}`);
+    if (body.emotional_control) lines.push(`Emotional control: ${body.emotional_control}`);
     if (body.situation) lines.push(`\nAdditional context: ${body.situation}`);
 
     if (lines.length === 0) {
@@ -37,26 +36,35 @@ serve(async (req) => {
 
     const userMessage = lines.join("\n");
 
-    const systemPrompt = `You are a business diagnostic engine based on the Conscious Entrepreneurship framework.
+    const systemPrompt = `You are a sharp, brutally honest business strategist using the Conscious Entrepreneurship framework.
 
-Analyze the user's business inputs and return structured output.
+Analyze the founder's inputs. Be direct, confrontational, and specific — not generic.
 
-Scoring rules:
-- Entrepreneurship Score (0-100): Based on revenue trend, growth speed, action-taking, execution
-- Consciousness Score (0-100): Based on vision clarity, team alignment, founder emotional state, purpose
+Two axes:
+- Entrepreneurship Quotient (0-100): execution, action, growth, revenue momentum
+- Consciousness Quotient (0-100): purpose, clarity, alignment, emotional state
 
 State mapping:
-- High Entrepreneurship (>60) + Low Consciousness (<40) → Burnout
-- Both Low (<40) → Survival Stagnation
-- Both High (>60) → Success, Scale & Joy
-- Mixed → use judgment
+- High E (>60) + Low C (<40) → Burnout
+- Low E (<40) + Low C (<40) → Survival
+- Low E (<40) + High C (>60) → Stagnation
+- High E (>60) + High C (>60) → SSJ
+- Mixed → use best judgment
+
+Identity mapping:
+- Burnout → "The Overloaded Operator"
+- Survival → "The Stuck Dreamer"
+- Stagnation → "The Comfortable Drifter"
+- SSJ → "The Aligned Scaler"
 
 Requirements:
-- 3 key insights (short bullet points about what's happening)
-- 2-4 open loops (missing systems like "Delegation System", "Culture Alignment")
-- 3 gamified quests with name, objective, action (specific), reward (business outcome)
+- 3 brutal reality insights (sharp, honest, slightly confrontational — NOT generic)
+- 3-4 business leaks with type and description (Vision Leak, System Leak, Energy Leak, Culture Leak, etc.)
+- Quest chain with 3 levels: Level 1 (Immediate fix), Level 2 (Structure), Level 3 (Alignment). Each has name, objective, action (very specific), reward (business outcome)
+- Future warning: what happens if nothing changes (2-3 sentences, scary but true)
+- Path to SSJ: 3 specific directives to reach SSJ state
 
-Be concise, actionable, founder-friendly. No jargon.`;
+Be concise, actionable, founder-friendly. No jargon. Be brutally honest.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -79,27 +87,43 @@ Be concise, actionable, founder-friendly. No jargon.`;
               parameters: {
                 type: "object",
                 properties: {
-                  state: { type: "string", enum: ["Burnout", "Survival Stagnation", "Success, Scale & Joy"] },
+                  state: { type: "string", enum: ["Burnout", "Survival", "Stagnation", "SSJ"] },
+                  identity: { type: "string", enum: ["The Overloaded Operator", "The Stuck Dreamer", "The Comfortable Drifter", "The Aligned Scaler"] },
                   entrepreneurship_score: { type: "number" },
                   consciousness_score: { type: "number" },
-                  insights: { type: "array", items: { type: "string" } },
-                  open_loops: { type: "array", items: { type: "string" } },
-                  quests: {
+                  insights: { type: "array", items: { type: "string" }, description: "3 brutal reality lines" },
+                  business_leaks: {
                     type: "array",
                     items: {
                       type: "object",
                       properties: {
+                        type: { type: "string" },
+                        description: { type: "string" },
+                      },
+                      required: ["type", "description"],
+                      additionalProperties: false,
+                    },
+                  },
+                  quest_chain: {
+                    type: "array",
+                    description: "3 quests: Level 1 (Immediate), Level 2 (Structure), Level 3 (Alignment)",
+                    items: {
+                      type: "object",
+                      properties: {
+                        level: { type: "number" },
                         name: { type: "string" },
                         objective: { type: "string" },
                         action: { type: "string" },
                         reward: { type: "string" },
                       },
-                      required: ["name", "objective", "action", "reward"],
+                      required: ["level", "name", "objective", "action", "reward"],
                       additionalProperties: false,
                     },
                   },
+                  future_warning: { type: "string" },
+                  path_to_ssj: { type: "array", items: { type: "string" }, description: "3 specific directives" },
                 },
-                required: ["state", "entrepreneurship_score", "consciousness_score", "insights", "open_loops", "quests"],
+                required: ["state", "identity", "entrepreneurship_score", "consciousness_score", "insights", "business_leaks", "quest_chain", "future_warning", "path_to_ssj"],
                 additionalProperties: false,
               },
             },
