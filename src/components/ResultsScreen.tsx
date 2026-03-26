@@ -196,7 +196,7 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           </div>
 
           <Button variant="gold" size="lg" className="px-10 py-6 text-base w-full max-w-md">
-            Book Your Growth Intervention
+            Book Your Leadership Reflection Call
           </Button>
 
           <p className={`text-sm font-medium ${config.color}`}>
