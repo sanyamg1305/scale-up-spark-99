@@ -15,7 +15,7 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
 
         <div className="space-y-4">
           <h1 className="font-display text-5xl md:text-6xl font-bold text-foreground tracking-tight">
-            SSJ Growth OS
+            Scale & Clarity OS
           </h1>
           <p className="text-muted-foreground text-lg md:text-xl font-body leading-relaxed max-w-md mx-auto">
             Your business isn't stuck by luck.<br />

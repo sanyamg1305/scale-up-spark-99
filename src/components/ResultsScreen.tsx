@@ -204,7 +204,7 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           </p>
 
           <p className="text-xs text-muted-foreground/60 max-w-sm mx-auto leading-relaxed">
-            Get a 20-minute deep dive into what's actually holding your business back, what needs to change immediately, and your next 90-day plan.
+            Get a 20-minute deep dive into what's actually holding your business back and what needs to change immediately.
           </p>
         </div>
 
