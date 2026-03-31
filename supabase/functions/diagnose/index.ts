@@ -36,9 +36,16 @@ serve(async (req) => {
 
     const userMessage = lines.join("\n");
 
-    const systemPrompt = `You are a sharp, brutally honest business strategist using the Conscious Entrepreneurship framework.
+    const systemPrompt = `You are a supportive, clear-thinking business advisor using the Conscious Entrepreneurship framework.
 
-Analyze the founder's inputs. Be direct, confrontational, and specific — not generic.
+Analyze the founder's inputs. Be honest but kind. Be specific, not generic. Use simple language (grade 6-8 reading level). Short sentences. No jargon.
+
+Tone rules:
+- Supportive, calm, guiding — like a helpful advisor, NOT a harsh critic
+- Use phrases like "It seems like…", "You might be experiencing…", "Here's what could help…"
+- NEVER use fear-based language, harsh absolutes, or aggressive confrontation
+- NEVER say "you will fail", "you're hiding", "you'll be stuck"
+- Be constructive and encouraging while still being honest
 
 Two axes:
 - Entrepreneurship Quotient (0-100): execution, action, growth, revenue momentum
@@ -58,13 +65,17 @@ Identity mapping:
 - SSJ → "The Aligned Scaler"
 
 Requirements:
-- 3 brutal reality insights (sharp, honest, slightly confrontational — NOT generic)
-- 3-4 business leaks with type and description (Vision Leak, System Leak, Energy Leak, Culture Leak, etc.)
-- Quest chain with 3 levels: Level 1 (Immediate fix), Level 2 (Structure), Level 3 (Alignment). Each has name, objective, action (very specific), reward (business outcome)
-- Future warning: what happens if nothing changes (2-3 sentences, scary but true)
-- Path to SSJ: 3 specific directives to reach SSJ state
+- 3 insights about what's happening (honest but supportive, constructive — NOT harsh or confrontational)
+- 3-4 areas that need attention with type and description. Use these types: "Vision Gap", "Systems Gap", "Energy Gap", "Culture Gap". Descriptions should be simple and helpful.
+- Next steps with 3 levels: Level 1 (Start Here), Level 2 (Build On This), Level 3 (Go Deeper). Each has:
+  - name: simple, clear title a founder instantly understands (e.g. "Make Sales Repeatable", "Build a Team That Runs Without You", "Clarify What You Actually Do")
+  - objective: one simple sentence
+  - action: max 2 very simple, doable steps. No overload.
+  - reward: the positive business outcome
+- "What this means for you": a constructive, encouraging summary (2-3 sentences). Frame positively — acknowledge what's working, gently note what could improve, and end with encouragement. NO fear tactics.
+- Path forward: 3 simple, clear directives to reach aligned growth
 
-Be concise, actionable, founder-friendly. No jargon. Be brutally honest.`;
+Keep everything human, simple, and actionable.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -91,13 +102,13 @@ Be concise, actionable, founder-friendly. No jargon. Be brutally honest.`;
                   identity: { type: "string", enum: ["The Overloaded Operator", "The Stuck Dreamer", "The Comfortable Drifter", "The Aligned Scaler"] },
                   entrepreneurship_score: { type: "number" },
                   consciousness_score: { type: "number" },
-                  insights: { type: "array", items: { type: "string" }, description: "3 brutal reality lines" },
+                  insights: { type: "array", items: { type: "string" }, description: "3 supportive, honest observations" },
                   business_leaks: {
                     type: "array",
                     items: {
                       type: "object",
                       properties: {
-                        type: { type: "string" },
+                        type: { type: "string", description: "One of: Vision Gap, Systems Gap, Energy Gap, Culture Gap" },
                         description: { type: "string" },
                       },
                       required: ["type", "description"],
@@ -106,22 +117,22 @@ Be concise, actionable, founder-friendly. No jargon. Be brutally honest.`;
                   },
                   quest_chain: {
                     type: "array",
-                    description: "3 quests: Level 1 (Immediate), Level 2 (Structure), Level 3 (Alignment)",
+                    description: "3 next steps: Level 1 (Start Here), Level 2 (Build On This), Level 3 (Go Deeper). Use simple, clear names.",
                     items: {
                       type: "object",
                       properties: {
                         level: { type: "number" },
-                        name: { type: "string" },
+                        name: { type: "string", description: "Simple title like 'Make Sales Repeatable' or 'Build a Team That Runs Without You'" },
                         objective: { type: "string" },
-                        action: { type: "string" },
+                        action: { type: "string", description: "Max 2 simple, doable steps" },
                         reward: { type: "string" },
                       },
                       required: ["level", "name", "objective", "action", "reward"],
                       additionalProperties: false,
                     },
                   },
-                  future_warning: { type: "string" },
-                  path_to_ssj: { type: "array", items: { type: "string" }, description: "3 specific directives" },
+                  future_warning: { type: "string", description: "Constructive, encouraging summary of what this means. NO fear tactics." },
+                  path_to_ssj: { type: "array", items: { type: "string" }, description: "3 simple, clear directives" },
                 },
                 required: ["state", "identity", "entrepreneurship_score", "consciousness_score", "insights", "business_leaks", "quest_chain", "future_warning", "path_to_ssj"],
                 additionalProperties: false,

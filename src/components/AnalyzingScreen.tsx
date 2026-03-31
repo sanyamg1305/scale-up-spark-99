@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
 const messages = [
-  "Scanning your Growth Engine…",
-  "Analyzing Team Dynamics…",
-  "Mapping Systems & Operations…",
-  "Evaluating Leadership Load…",
-  "Measuring Purpose Alignment…",
-  "Generating your diagnosis…",
+  "Looking at your growth…",
+  "Understanding your team…",
+  "Reviewing your systems…",
+  "Checking your workload…",
+  "Measuring clarity & alignment…",
+  "Putting it all together…",
 ];
 
 const AnalyzingScreen = () => {
@@ -29,7 +29,7 @@ const AnalyzingScreen = () => {
 
         <div className="space-y-3">
           <h2 className="font-display text-xl font-bold text-foreground">
-            Analyzing your Growth Meter…
+            Getting your results ready…
           </h2>
           <p className="text-muted-foreground text-sm animate-in fade-in duration-500" key={msgIndex}>
             {messages[msgIndex]}
