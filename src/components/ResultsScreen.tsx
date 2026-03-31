@@ -23,7 +23,7 @@ const stateConfig: Record<string, { emoji: string; color: string; ctaText: strin
   Burnout: { emoji: "🔥", color: "text-destructive", ctaText: "Let's help you reduce the pressure and find more balance" },
   Survival: { emoji: "⚠️", color: "text-gold-dim", ctaText: "Let's get things moving in the right direction" },
   Stagnation: { emoji: "🧊", color: "text-muted-foreground", ctaText: "Let's turn your clarity into real progress" },
-  SSJ: { emoji: "🚀", color: "text-primary", ctaText: "Let's help you scale while staying aligned" },
+  SSJ: { emoji: "🚀", color: "text-primary", ctaText: "Let's help you reach Success | Scale | Joy" },
 };
 
 const leakIcons: Record<string, string> = {
