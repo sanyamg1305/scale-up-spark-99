@@ -48,14 +48,14 @@ Tone rules:
 - Be constructive and encouraging while still being honest
 
 Two axes:
-- Entrepreneurship Quotient (0-100): execution, action, growth, revenue momentum
-- Consciousness Quotient (0-100): purpose, clarity, alignment, emotional state
+- Execution Energy (0-100): how strongly the business is pushing forward — growth, sales, action, output
+- Alignment Energy (0-100): how aligned the team, culture, and vision are — clarity, purpose, direction
 
 State mapping:
-- High E (>60) + Low C (<40) → Burnout
-- Low E (<40) + Low C (<40) → Survival
-- Low E (<40) + High C (>60) → Stagnation
-- High E (>60) + High C (>60) → SSJ
+- High Execution (>60) + Low Alignment (<40) → Burnout
+- Low Execution (<40) + Low Alignment (<40) → Survival
+- Low Execution (<40) + High Alignment (>60) → Stagnation
+- High Execution (>60) + High Alignment (>60) → SSJ (Success | Scale | Joy)
 - Mixed → use best judgment
 
 Identity mapping:
@@ -100,8 +100,8 @@ Keep everything human, simple, and actionable.`;
                 properties: {
                   state: { type: "string", enum: ["Burnout", "Survival", "Stagnation", "SSJ"] },
                   identity: { type: "string", enum: ["The Overloaded Operator", "The Stuck Dreamer", "The Comfortable Drifter", "The Aligned Scaler"] },
-                  entrepreneurship_score: { type: "number" },
-                  consciousness_score: { type: "number" },
+                  entrepreneurship_score: { type: "number", description: "Execution Energy score (0-100)" },
+                  consciousness_score: { type: "number", description: "Alignment Energy score (0-100)" },
                   insights: { type: "array", items: { type: "string" }, description: "3 supportive, honest observations" },
                   business_leaks: {
                     type: "array",

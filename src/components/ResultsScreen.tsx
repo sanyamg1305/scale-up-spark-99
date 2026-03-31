@@ -23,7 +23,7 @@ const stateConfig: Record<string, { emoji: string; color: string; ctaText: strin
   Burnout: { emoji: "🔥", color: "text-destructive", ctaText: "Let's help you reduce the pressure and find more balance" },
   Survival: { emoji: "⚠️", color: "text-gold-dim", ctaText: "Let's get things moving in the right direction" },
   Stagnation: { emoji: "🧊", color: "text-muted-foreground", ctaText: "Let's turn your clarity into real progress" },
-  SSJ: { emoji: "🚀", color: "text-primary", ctaText: "Let's help you scale while staying aligned" },
+  SSJ: { emoji: "🚀", color: "text-primary", ctaText: "Let's help you reach Success | Scale | Joy" },
 };
 
 const leakIcons: Record<string, string> = {
@@ -159,7 +159,7 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
         {/* ─── PATH TO ALIGNED GROWTH ─── */}
         <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 md:p-8 space-y-4">
           <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-primary">
-            🚀 Your Path Forward
+            🚀 Your Path to Success | Scale | Joy (SSJ)
           </h3>
           <div className="space-y-3">
             {result.path_to_ssj.map((step, i) => (
