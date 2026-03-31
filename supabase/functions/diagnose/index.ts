@@ -100,8 +100,8 @@ Keep everything human, simple, and actionable.`;
                 properties: {
                   state: { type: "string", enum: ["Burnout", "Survival", "Stagnation", "SSJ"] },
                   identity: { type: "string", enum: ["The Overloaded Operator", "The Stuck Dreamer", "The Comfortable Drifter", "The Aligned Scaler"] },
-                  entrepreneurship_score: { type: "number" },
-                  consciousness_score: { type: "number" },
+                  entrepreneurship_score: { type: "number", description: "Execution Energy score (0-100)" },
+                  consciousness_score: { type: "number", description: "Alignment Energy score (0-100)" },
                   insights: { type: "array", items: { type: "string" }, description: "3 supportive, honest observations" },
                   business_leaks: {
                     type: "array",

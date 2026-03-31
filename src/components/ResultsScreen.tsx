@@ -159,7 +159,7 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
         {/* ─── PATH TO ALIGNED GROWTH ─── */}
         <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 md:p-8 space-y-4">
           <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-primary">
-            🚀 Your Path Forward
+            🚀 Your Path to Success | Scale | Joy (SSJ)
           </h3>
           <div className="space-y-3">
             {result.path_to_ssj.map((step, i) => (
