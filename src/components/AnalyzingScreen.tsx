@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
 const messages = [
-  "Scanning your Growth Engine…",
-  "Analyzing Team Dynamics…",
-  "Mapping Systems & Operations…",
-  "Evaluating Leadership Load…",
-  "Measuring Purpose Alignment…",
-  "Generating your diagnosis…",
+  "Looking at your growth…",
+  "Understanding your team…",
+  "Reviewing your systems…",
+  "Checking your workload…",
+  "Measuring clarity & alignment…",
+  "Putting it all together…",
 ];
 
 const AnalyzingScreen = () => {
