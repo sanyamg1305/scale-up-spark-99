@@ -20,17 +20,17 @@ interface ResultsScreenProps {
 }
 
 const stateConfig: Record<string, { emoji: string; color: string; ctaText: string }> = {
-  Burnout: { emoji: "🔥", color: "text-destructive", ctaText: "Fix your chaos before it breaks your team" },
-  Survival: { emoji: "⚠️", color: "text-gold-dim", ctaText: "Get out of survival mode fast" },
-  Stagnation: { emoji: "🧊", color: "text-muted-foreground", ctaText: "Turn clarity into growth" },
-  SSJ: { emoji: "🚀", color: "text-primary", ctaText: "Scale without losing alignment" },
+  Burnout: { emoji: "🔥", color: "text-destructive", ctaText: "Let's help you reduce the pressure and find more balance" },
+  Survival: { emoji: "⚠️", color: "text-gold-dim", ctaText: "Let's get things moving in the right direction" },
+  Stagnation: { emoji: "🧊", color: "text-muted-foreground", ctaText: "Let's turn your clarity into real progress" },
+  SSJ: { emoji: "🚀", color: "text-primary", ctaText: "Let's help you scale while staying aligned" },
 };
 
 const leakIcons: Record<string, string> = {
-  "Vision Leak": "🧭",
-  "System Leak": "⚙️",
-  "Energy Leak": "⚡",
-  "Culture Leak": "🧬",
+  "Vision Gap": "🧭",
+  "Systems Gap": "⚙️",
+  "Energy Gap": "⚡",
+  "Culture Gap": "🧬",
 };
 
 const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
@@ -40,10 +40,10 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
     <div className="min-h-screen bg-background">
       <div className="container max-w-3xl py-10 px-6 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
 
-        {/* ─── IDENTITY ─── */}
+        {/* ─── YOUR CURRENT STATE ─── */}
         <div className="text-center space-y-3 pt-6">
           <p className="text-xs font-display uppercase tracking-[0.3em] text-muted-foreground">
-            Your Diagnosis
+            🧭 Your Current State
           </p>
           <div className="text-5xl">{config.emoji}</div>
           <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">
@@ -62,18 +62,21 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           />
         </div>
 
-        {/* ─── ENERGY METERS ─── */}
+        {/* ─── GROWTH METER ─── */}
         <div className="rounded-xl border border-border bg-card p-6 md:p-8">
+          <p className="text-xs font-display uppercase tracking-widest text-muted-foreground mb-4">
+            📊 Your Growth Meter
+          </p>
           <GrowthMeter
             entrepreneurshipScore={result.entrepreneurship_score}
             consciousnessScore={result.consciousness_score}
           />
         </div>
 
-        {/* ─── BRUTAL REALITY ─── */}
+        {/* ─── WHAT'S HAPPENING ─── */}
         <div className="rounded-xl border border-border bg-card p-6 md:p-8 space-y-4">
           <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-            🧠 Brutal Reality
+            🧠 What's Happening
           </h3>
           <div className="space-y-3">
             {result.insights.map((insight, i) => (
@@ -84,10 +87,10 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           </div>
         </div>
 
-        {/* ─── BUSINESS LEAKS ─── */}
+        {/* ─── WHAT NEEDS ATTENTION ─── */}
         <div className="space-y-4">
           <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-            ⚠️ Business Leaks
+            ⚠️ What Needs Attention
           </h3>
           <div className="grid gap-3 md:grid-cols-2">
             {result.business_leaks.map((leak, i) => (
@@ -105,10 +108,10 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           </div>
         </div>
 
-        {/* ─── QUEST CHAINS ─── */}
+        {/* ─── YOUR NEXT STEPS ─── */}
         <div className="space-y-4">
           <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-            🎮 Quest Chain
+            🎯 Your Next Steps
           </h3>
           <div className="space-y-4">
             {result.quest_chain.map((quest, i) => (
@@ -116,15 +119,14 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
                 key={i}
                 className="rounded-xl border border-border bg-card p-5 space-y-3 hover:border-primary/40 transition-all duration-300 relative overflow-hidden"
               >
-                {/* Level badge */}
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary/20 text-primary font-display font-bold text-sm">
-                    L{quest.level}
+                    {quest.level}
                   </span>
                   <div>
                     <h4 className="font-display font-bold text-foreground text-sm">{quest.name}</h4>
                     <p className="text-xs text-muted-foreground">
-                      {quest.level === 1 ? "Immediate Fix" : quest.level === 2 ? "Build Structure" : "Deep Alignment"}
+                      {quest.level === 1 ? "Start Here" : quest.level === 2 ? "Build On This" : "Go Deeper"}
                     </p>
                   </div>
                 </div>
@@ -144,20 +146,20 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           </div>
         </div>
 
-        {/* ─── FUTURE WARNING ─── */}
-        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 md:p-8 space-y-3">
-          <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-destructive">
-            🔮 If Nothing Changes…
+        {/* ─── WHAT THIS MEANS FOR YOU ─── */}
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 md:p-8 space-y-3">
+          <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-primary">
+            🌱 What This Means for You
           </h3>
           <p className="text-foreground text-base leading-relaxed">
             {result.future_warning}
           </p>
         </div>
 
-        {/* ─── PATH TO SSJ ─── */}
+        {/* ─── PATH TO ALIGNED GROWTH ─── */}
         <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 md:p-8 space-y-4">
           <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-primary">
-            🚀 Path to SSJ
+            🚀 Your Path Forward
           </h3>
           <div className="space-y-3">
             {result.path_to_ssj.map((step, i) => (
@@ -174,24 +176,24 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
         {/* ─── CTA SECTION ─── */}
         <div className="rounded-xl border border-border bg-card p-6 md:p-10 space-y-6 text-center">
           <p className="font-display text-xs uppercase tracking-[0.3em] text-primary">
-            You've completed Level 1: Awareness
+            You've completed Step 1: Awareness
           </p>
           <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">
-            Awareness doesn't fix businesses.
+            Awareness is just the beginning.
           </h2>
           <p className="text-muted-foreground text-base">
-            Execution + Alignment does.
+            Real change comes from the right support + clear action.
           </p>
 
           <div className="pt-2 space-y-4">
             <p className="font-display text-lg font-semibold text-foreground">
-              Unlock Level 2: Guided Transformation
+              Ready for Step 2? Let's Work Together
             </p>
             <div className="text-left max-w-md mx-auto space-y-2 text-sm text-muted-foreground">
               <p>SKC helps founders:</p>
-              <p>✔ Define vision that teams actually follow</p>
-              <p>✔ Align people, culture, and performance</p>
-              <p>✔ Build systems that scale without burnout</p>
+              <p>✔ Get clear on a vision your team can follow</p>
+              <p>✔ Align your people, culture, and performance</p>
+              <p>✔ Build systems that grow without burning you out</p>
             </div>
           </div>
 
@@ -204,7 +206,7 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           </p>
 
           <p className="text-xs text-muted-foreground/60 max-w-sm mx-auto leading-relaxed">
-            Get a 20-minute deep dive into what's actually holding your business back and what needs to change immediately.
+            A friendly 20-minute conversation about what's really going on in your business and what small changes could make a big difference.
           </p>
         </div>
 

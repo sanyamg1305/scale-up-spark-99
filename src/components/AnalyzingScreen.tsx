@@ -29,7 +29,7 @@ const AnalyzingScreen = () => {
 
         <div className="space-y-3">
           <h2 className="font-display text-xl font-bold text-foreground">
-            Analyzing your Growth Meter…
+            Getting your results ready…
           </h2>
           <p className="text-muted-foreground text-sm animate-in fade-in duration-500" key={msgIndex}>
             {messages[msgIndex]}
