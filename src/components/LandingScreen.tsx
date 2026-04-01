@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import skcLogo from "@/assets/skc-logo.png";
 
 interface LandingScreenProps {
   onStart: () => void;
@@ -8,10 +9,8 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
       <div className="text-center space-y-10 max-w-xl animate-in fade-in slide-in-from-bottom-6 duration-700">
-        {/* Logo mark */}
-        <div className="mx-auto h-20 w-20 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center gold-glow">
-          <span className="text-primary font-display font-bold text-3xl gold-text-glow">S</span>
-        </div>
+        {/* Logo */}
+        <img src={skcLogo} alt="SKC.World" className="mx-auto h-20 object-contain" />
 
         <div className="space-y-4">
           <h1 className="font-display text-5xl md:text-6xl font-bold text-foreground tracking-tight">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
+import skcLogo from "@/assets/skc-logo.png";
 import {
   Tooltip,
   TooltipContent,
@@ -285,8 +286,11 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
           />
         </div>
 
-        {/* Step indicator */}
+        {/* Logo + Step indicator */}
         <div className="container max-w-2xl pt-6 pb-2 px-6">
+          <div className="flex justify-center mb-4">
+            <img src={skcLogo} alt="SKC.World" className="h-10 object-contain" />
+          </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <button onClick={prev} className="hover:text-foreground transition-colors font-medium">
               ← Back
