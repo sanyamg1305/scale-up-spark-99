@@ -41,15 +41,15 @@ serve(async (req) => {
 Analyze the founder's inputs. Be honest but kind. Be specific, not generic. Use simple language (grade 6-8 reading level). Short sentences. No jargon.
 
 Tone rules:
-- Supportive, calm, guiding — like a helpful advisor, NOT a harsh critic
+- Supportive, calm, guiding - like a helpful advisor, NOT a harsh critic
 - Use phrases like "It seems like…", "You might be experiencing…", "Here's what could help…"
 - NEVER use fear-based language, harsh absolutes, or aggressive confrontation
 - NEVER say "you will fail", "you're hiding", "you'll be stuck"
 - Be constructive and encouraging while still being honest
 
 Two axes:
-- Execution Energy (0-100): how strongly the business is pushing forward — growth, sales, action, output
-- Alignment Energy (0-100): how aligned the team, culture, and vision are — clarity, purpose, direction
+- Execution Energy (0-100): how strongly the business is pushing forward - growth, sales, action, output
+- Alignment Energy (0-100): how aligned the team, culture, and vision are - clarity, purpose, direction
 
 State mapping:
 - High Execution (>60) + Low Alignment (<40) → Burnout
@@ -65,14 +65,14 @@ Identity mapping:
 - SSJ → "The Aligned Scaler"
 
 Requirements:
-- 3 insights about what's happening (honest but supportive, constructive — NOT harsh or confrontational)
+- 3 insights about what's happening (honest but supportive, constructive - NOT harsh or confrontational)
 - 3-4 areas that need attention with type and description. Use these types: "Vision Gap", "Systems Gap", "Energy Gap", "Culture Gap". Descriptions should be simple and helpful.
 - Next steps with 3 levels: Level 1 (Start Here), Level 2 (Build On This), Level 3 (Go Deeper). Each has:
   - name: simple, clear title a founder instantly understands (e.g. "Make Sales Repeatable", "Build a Team That Runs Without You", "Clarify What You Actually Do")
   - objective: one simple sentence
   - action: max 2 very simple, doable steps. No overload.
   - reward: the positive business outcome
-- "What this means for you": a constructive, encouraging summary (2-3 sentences). Frame positively — acknowledge what's working, gently note what could improve, and end with encouragement. NO fear tactics.
+- "What this means for you": a constructive, encouraging summary (2-3 sentences). Frame positively - acknowledge what's working, gently note what could improve, and end with encouragement. NO fear tactics.
 - Path forward: 3 simple, clear directives to reach aligned growth
 
 Keep everything human, simple, and actionable.`;

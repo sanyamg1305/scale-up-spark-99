@@ -81,12 +81,12 @@ const steps: Step[] = [
       {
         key: "growth_speed",
         label: "How fast are you actually growing?",
-        tooltip: "The overall pace of your business growth — customers, revenue, or reach.",
+        tooltip: "The overall pace of your business growth - customers, revenue, or reach.",
         options: [
           { label: "Stagnant", tooltip: "No noticeable growth happening right now." },
-          { label: "Crawling", tooltip: "Growing very slowly — barely noticeable." },
+          { label: "Crawling", tooltip: "Growing very slowly - barely noticeable." },
           { label: "Moderate", tooltip: "Steady growth at a comfortable pace." },
-          { label: "Hypergrowth", tooltip: "Growing extremely fast — hard to keep up." },
+          { label: "Hypergrowth", tooltip: "Growing extremely fast - hard to keep up." },
         ],
       },
     ],
@@ -111,10 +111,10 @@ const steps: Step[] = [
         label: "How stable is your team?",
         tooltip: "How often people leave or join your team. High turnover means low stability.",
         options: [
-          { label: "Revolving Door", tooltip: "People leave frequently — hard to keep a team." },
+          { label: "Revolving Door", tooltip: "People leave frequently - hard to keep a team." },
           { label: "Some Turnover", tooltip: "A few people leave now and then." },
           { label: "Stable", tooltip: "Your team mostly stays and is reliable." },
-          { label: "Rock Solid", tooltip: "Almost no one leaves — strong loyalty." },
+          { label: "Rock Solid", tooltip: "Almost no one leaves - strong loyalty." },
         ],
       },
     ],
@@ -128,7 +128,7 @@ const steps: Step[] = [
         label: "How clear are your processes?",
         tooltip: "Whether your team knows exactly how things should be done, step by step.",
         options: [
-          { label: "Total Chaos", tooltip: "No clear way of doing things — everyone improvises." },
+          { label: "Total Chaos", tooltip: "No clear way of doing things - everyone improvises." },
           { label: "Ad Hoc", tooltip: "Some structure exists but it changes constantly." },
           { label: "Some SOPs", tooltip: "Key tasks have documented steps to follow." },
           { label: "Fully Systematized", tooltip: "Everything runs on clear, repeatable processes." },
@@ -168,7 +168,7 @@ const steps: Step[] = [
         tooltip: "How comfortable you are handing off tasks and trusting others to do them.",
         options: [
           { label: "I Do Everything", tooltip: "You handle almost all tasks yourself." },
-          { label: "Barely Delegate", tooltip: "You hand off very little — most stays with you." },
+          { label: "Barely Delegate", tooltip: "You hand off very little - most stays with you." },
           { label: "Moderate", tooltip: "You delegate some tasks but keep key ones." },
           { label: "Strong Delegation", tooltip: "You trust your team and hand off confidently." },
         ],

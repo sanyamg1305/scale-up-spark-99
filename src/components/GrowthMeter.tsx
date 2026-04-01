@@ -39,7 +39,7 @@ const GrowthMeter = ({ entrepreneurshipScore, consciousnessScore }: GrowthMeterP
                   <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted text-muted-foreground text-[10px] cursor-help">i</span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>How strongly your business is pushing forward — growth, sales, action, and output.</p>
+                  <p>How strongly your business is pushing forward - growth, sales, action, and output.</p>
                 </TooltipContent>
               </Tooltip>
             </span>
@@ -62,7 +62,7 @@ const GrowthMeter = ({ entrepreneurshipScore, consciousnessScore }: GrowthMeterP
                   <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted text-muted-foreground text-[10px] cursor-help">i</span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>How aligned your team, culture, and vision are — clarity, purpose, and direction.</p>
+                  <p>How aligned your team, culture, and vision are - clarity, purpose, and direction.</p>
                 </TooltipContent>
               </Tooltip>
             </span>
