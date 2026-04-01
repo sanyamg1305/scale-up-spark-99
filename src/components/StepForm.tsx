@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
+import skcLogo from "@/assets/skc-logo.png";
 import {
   Tooltip,
   TooltipContent,
