@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import skcLogo from "@/assets/skc-logo.png";
 
 const messages = [
   "Looking at your growth…",
