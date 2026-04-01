@@ -1,7 +1,7 @@
 import GrowthMeter from "./GrowthMeter";
 import QuadrantMap from "./QuadrantMap";
 import { Button } from "@/components/ui/button";
-import skcLogo from "@/assets/skc-logo.png";
+
 
 export interface DiagnosisResult {
   state: string;
@@ -41,10 +41,7 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
     <div className="min-h-screen bg-background">
       <div className="container max-w-3xl py-10 px-6 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
 
-        {/* Logo */}
-        <div className="flex justify-center pt-2">
-          <img src={skcLogo} alt="SKC.World" className="h-14 object-contain" />
-        </div>
+
 
         {/* ─── YOUR CURRENT STATE ─── */}
         <div className="text-center space-y-3 pt-6">

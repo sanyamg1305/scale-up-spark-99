@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import skcLogo from "@/assets/skc-logo.png";
+
 
 const messages = [
   "Looking at your growth…",
@@ -24,7 +24,7 @@ const AnalyzingScreen = () => {
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
       <div className="text-center space-y-8">
         {/* Logo */}
-        <img src={skcLogo} alt="SKC.World" className="mx-auto h-16 object-contain animate-pulse-gold" />
+
 
         <div className="space-y-3">
           <h2 className="font-display text-xl font-bold text-foreground">
