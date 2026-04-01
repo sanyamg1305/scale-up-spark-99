@@ -324,19 +324,26 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
                 </div>
                 <div className="grid gap-3">
                   {current.question.options.map((opt) => {
-                    const isSelected = data[current.question!.key] === opt;
+                    const isSelected = data[current.question!.key] === opt.label;
                     return (
-                      <button
-                        key={opt}
-                        onClick={() => selectOption(current.question!.key, opt)}
-                        className={`w-full text-left px-5 py-4 rounded-xl text-base font-medium transition-all duration-200 border-2 ${
-                          isSelected
-                            ? "bg-primary/15 text-primary border-primary gold-glow"
-                            : "bg-card text-foreground border-border hover:border-primary/40 hover:bg-card/80"
-                        }`}
-                      >
-                        {opt}
-                      </button>
+                      <Tooltip key={opt.label}>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => selectOption(current.question!.key, opt.label)}
+                            className={`w-full text-left px-5 py-4 rounded-xl text-base font-medium transition-all duration-200 border-2 flex items-center justify-between ${
+                              isSelected
+                                ? "bg-primary/15 text-primary border-primary gold-glow"
+                                : "bg-card text-foreground border-border hover:border-primary/40 hover:bg-card/80"
+                            }`}
+                          >
+                            <span>{opt.label}</span>
+                            <Info size={14} className="shrink-0 text-muted-foreground/50" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="max-w-[240px] text-sm">
+                          {opt.tooltip}
+                        </TooltipContent>
+                      </Tooltip>
                     );
                   })}
                 </div>
