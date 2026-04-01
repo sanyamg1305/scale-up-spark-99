@@ -43,11 +43,16 @@ interface StepFormProps {
   onBack: () => void;
 }
 
+interface OptionItem {
+  label: string;
+  tooltip: string;
+}
+
 interface Question {
   key: keyof FormData;
   label: string;
   tooltip: string;
-  options: string[];
+  options: OptionItem[];
 }
 
 interface Step {
@@ -66,13 +71,23 @@ const steps: Step[] = [
         key: "revenue_trend",
         label: "How is your revenue trending?",
         tooltip: "Is your income going up, staying flat, or going down over the last few months?",
-        options: ["Declining", "Flat", "Slow Growth", "Fast Growth"],
+        options: [
+          { label: "Declining", tooltip: "Your revenue is going down month by month." },
+          { label: "Flat", tooltip: "Revenue is stable but not growing." },
+          { label: "Slow Growth", tooltip: "Revenue is increasing a little each month." },
+          { label: "Fast Growth", tooltip: "Revenue is growing quickly and consistently." },
+        ],
       },
       {
         key: "growth_speed",
         label: "How fast are you actually growing?",
         tooltip: "The overall pace of your business growth — customers, revenue, or reach.",
-        options: ["Stagnant", "Crawling", "Moderate", "Hypergrowth"],
+        options: [
+          { label: "Stagnant", tooltip: "No noticeable growth happening right now." },
+          { label: "Crawling", tooltip: "Growing very slowly — barely noticeable." },
+          { label: "Moderate", tooltip: "Steady growth at a comfortable pace." },
+          { label: "Hypergrowth", tooltip: "Growing extremely fast — hard to keep up." },
+        ],
       },
     ],
   },
@@ -84,13 +99,23 @@ const steps: Step[] = [
         key: "team_motivation",
         label: "How motivated is your team right now?",
         tooltip: "How energized and engaged your team feels about the work they're doing.",
-        options: ["Checked Out", "Going Through Motions", "Engaged", "On Fire"],
+        options: [
+          { label: "Checked Out", tooltip: "Your team has mentally disconnected from work." },
+          { label: "Going Through Motions", tooltip: "They show up but aren't truly engaged." },
+          { label: "Engaged", tooltip: "Your team is interested and putting in effort." },
+          { label: "On Fire", tooltip: "Everyone is energized and giving their best." },
+        ],
       },
       {
         key: "team_stability",
         label: "How stable is your team?",
         tooltip: "How often people leave or join your team. High turnover means low stability.",
-        options: ["Revolving Door", "Some Turnover", "Stable", "Rock Solid"],
+        options: [
+          { label: "Revolving Door", tooltip: "People leave frequently — hard to keep a team." },
+          { label: "Some Turnover", tooltip: "A few people leave now and then." },
+          { label: "Stable", tooltip: "Your team mostly stays and is reliable." },
+          { label: "Rock Solid", tooltip: "Almost no one leaves — strong loyalty." },
+        ],
       },
     ],
   },
@@ -102,13 +127,23 @@ const steps: Step[] = [
         key: "process_clarity",
         label: "How clear are your processes?",
         tooltip: "Whether your team knows exactly how things should be done, step by step.",
-        options: ["Total Chaos", "Ad Hoc", "Some SOPs", "Fully Systematized"],
+        options: [
+          { label: "Total Chaos", tooltip: "No clear way of doing things — everyone improvises." },
+          { label: "Ad Hoc", tooltip: "Some structure exists but it changes constantly." },
+          { label: "Some SOPs", tooltip: "Key tasks have documented steps to follow." },
+          { label: "Fully Systematized", tooltip: "Everything runs on clear, repeatable processes." },
+        ],
       },
       {
         key: "firefighting_frequency",
         label: "How often are you firefighting?",
         tooltip: "How often you deal with urgent problems instead of planned, important work.",
-        options: ["All Day Every Day", "Daily", "Weekly", "Rarely"],
+        options: [
+          { label: "All Day Every Day", tooltip: "You spend most of your time on urgent surprises." },
+          { label: "Daily", tooltip: "Unexpected problems pop up almost every day." },
+          { label: "Weekly", tooltip: "Urgent issues come up a few times a week." },
+          { label: "Rarely", tooltip: "Most of your work is planned and predictable." },
+        ],
       },
     ],
   },
@@ -120,13 +155,23 @@ const steps: Step[] = [
         key: "founder_dependency",
         label: "How dependent is the business on you?",
         tooltip: "How much your business depends on you to make decisions or run daily work.",
-        options: ["Nothing Works Without Me", "Most Things Need Me", "Some Things", "Runs Without Me"],
+        options: [
+          { label: "Nothing Works Without Me", tooltip: "The business stops if you step away." },
+          { label: "Most Things Need Me", tooltip: "Most decisions and tasks still go through you." },
+          { label: "Some Things", tooltip: "Your team handles most things independently." },
+          { label: "Runs Without Me", tooltip: "The business operates smoothly without you daily." },
+        ],
       },
       {
         key: "delegation_level",
         label: "How well do you delegate?",
         tooltip: "How comfortable you are handing off tasks and trusting others to do them.",
-        options: ["I Do Everything", "Barely Delegate", "Moderate", "Strong Delegation"],
+        options: [
+          { label: "I Do Everything", tooltip: "You handle almost all tasks yourself." },
+          { label: "Barely Delegate", tooltip: "You hand off very little — most stays with you." },
+          { label: "Moderate", tooltip: "You delegate some tasks but keep key ones." },
+          { label: "Strong Delegation", tooltip: "You trust your team and hand off confidently." },
+        ],
       },
     ],
   },
@@ -138,19 +183,34 @@ const steps: Step[] = [
         key: "vision_clarity",
         label: "How clear is your vision?",
         tooltip: "How well you can describe where your business is heading and why it matters.",
-        options: ["No Clue", "Vague Idea", "Fairly Clear", "Crystal Clear"],
+        options: [
+          { label: "No Clue", tooltip: "You're unsure where the business is heading." },
+          { label: "Vague Idea", tooltip: "You have a rough direction but it's not clear." },
+          { label: "Fairly Clear", tooltip: "You know your direction and can explain it." },
+          { label: "Crystal Clear", tooltip: "Your vision is sharp and your team knows it too." },
+        ],
       },
       {
         key: "stress_level",
         label: "What's your stress level?",
         tooltip: "How much pressure you're feeling day to day as a founder.",
-        options: ["Breaking Point", "Constantly Stressed", "Manageable", "Calm & Focused"],
+        options: [
+          { label: "Breaking Point", tooltip: "You feel overwhelmed and close to burnout." },
+          { label: "Constantly Stressed", tooltip: "Stress is always there in the background." },
+          { label: "Manageable", tooltip: "Some stress but you can handle it." },
+          { label: "Calm & Focused", tooltip: "You feel in control and clear-headed." },
+        ],
       },
       {
         key: "emotional_control",
         label: "How steady do you feel emotionally?",
         tooltip: "How well you handle tough moments without reacting impulsively.",
-        options: ["Very Reactive", "Often Triggered", "Mostly Steady", "Fully Grounded"],
+        options: [
+          { label: "Very Reactive", tooltip: "Small things can throw you off quickly." },
+          { label: "Often Triggered", tooltip: "Tough moments tend to affect your mood." },
+          { label: "Mostly Steady", tooltip: "You stay calm most of the time." },
+          { label: "Fully Grounded", tooltip: "You handle pressure without losing composure." },
+        ],
       },
     ],
   },
@@ -264,19 +324,26 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
                 </div>
                 <div className="grid gap-3">
                   {current.question.options.map((opt) => {
-                    const isSelected = data[current.question!.key] === opt;
+                    const isSelected = data[current.question!.key] === opt.label;
                     return (
-                      <button
-                        key={opt}
-                        onClick={() => selectOption(current.question!.key, opt)}
-                        className={`w-full text-left px-5 py-4 rounded-xl text-base font-medium transition-all duration-200 border-2 ${
-                          isSelected
-                            ? "bg-primary/15 text-primary border-primary gold-glow"
-                            : "bg-card text-foreground border-border hover:border-primary/40 hover:bg-card/80"
-                        }`}
-                      >
-                        {opt}
-                      </button>
+                      <Tooltip key={opt.label}>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => selectOption(current.question!.key, opt.label)}
+                            className={`w-full text-left px-5 py-4 rounded-xl text-base font-medium transition-all duration-200 border-2 flex items-center justify-between ${
+                              isSelected
+                                ? "bg-primary/15 text-primary border-primary gold-glow"
+                                : "bg-card text-foreground border-border hover:border-primary/40 hover:bg-card/80"
+                            }`}
+                          >
+                            <span>{opt.label}</span>
+                            <Info size={14} className="shrink-0 text-muted-foreground/50" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="max-w-[240px] text-sm">
+                          {opt.tooltip}
+                        </TooltipContent>
+                      </Tooltip>
                     );
                   })}
                 </div>
