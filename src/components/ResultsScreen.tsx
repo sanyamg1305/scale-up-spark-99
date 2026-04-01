@@ -1,6 +1,7 @@
 import GrowthMeter from "./GrowthMeter";
 import QuadrantMap from "./QuadrantMap";
 import { Button } from "@/components/ui/button";
+import skcLogo from "@/assets/skc-logo.png";
 
 export interface DiagnosisResult {
   state: string;
