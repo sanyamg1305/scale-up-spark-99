@@ -43,11 +43,16 @@ interface StepFormProps {
   onBack: () => void;
 }
 
+interface OptionItem {
+  label: string;
+  tooltip: string;
+}
+
 interface Question {
   key: keyof FormData;
   label: string;
   tooltip: string;
-  options: string[];
+  options: OptionItem[];
 }
 
 interface Step {
