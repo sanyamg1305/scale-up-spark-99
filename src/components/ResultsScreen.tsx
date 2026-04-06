@@ -1,7 +1,9 @@
 import GrowthMeter from "./GrowthMeter";
 import QuadrantMap from "./QuadrantMap";
+import ActionChecklist from "./ActionChecklist";
 import { Button } from "@/components/ui/button";
-
+import { Download } from "lucide-react";
+import { generateReport } from "@/lib/generatePdf";
 
 export interface DiagnosisResult {
   state: string;
@@ -40,8 +42,6 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-3xl py-10 px-6 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
-
-
 
         {/* ─── YOUR CURRENT STATE ─── */}
         <div className="text-center space-y-3 pt-6">
@@ -149,6 +149,9 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           </div>
         </div>
 
+        {/* ─── ACTION CHECKLIST ─── */}
+        <ActionChecklist quests={result.quest_chain} />
+
         {/* ─── WHAT THIS MEANS FOR YOU ─── */}
         <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 md:p-8 space-y-3">
           <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-primary">
@@ -174,6 +177,19 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* ─── DOWNLOAD REPORT ─── */}
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => generateReport(result)}
+            className="gap-2 px-8"
+          >
+            <Download size={18} />
+            Download PDF Report
+          </Button>
         </div>
 
         {/* ─── CTA SECTION ─── */}

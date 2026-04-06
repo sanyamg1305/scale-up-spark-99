@@ -19,11 +19,16 @@ serve(async (req) => {
     if (body.growth_speed) lines.push(`Growth speed: ${body.growth_speed}`);
     if (body.team_motivation) lines.push(`Team motivation: ${body.team_motivation}`);
     if (body.team_stability) lines.push(`Team stability: ${body.team_stability}`);
+    if (body.team_feedback) lines.push(`Team feedback openness: ${body.team_feedback}`);
+    if (body.team_ownership) lines.push(`Team ownership: ${body.team_ownership}`);
     if (body.process_clarity) lines.push(`Process clarity: ${body.process_clarity}`);
     if (body.firefighting_frequency) lines.push(`Firefighting frequency: ${body.firefighting_frequency}`);
+    if (body.priority_management) lines.push(`Priority management: ${body.priority_management}`);
     if (body.founder_dependency) lines.push(`Founder dependency: ${body.founder_dependency}`);
     if (body.delegation_level) lines.push(`Delegation level: ${body.delegation_level}`);
+    if (body.decision_making) lines.push(`Decision-making style: ${body.decision_making}`);
     if (body.vision_clarity) lines.push(`Vision clarity: ${body.vision_clarity}`);
+    if (body.daily_routine) lines.push(`Daily routine structure: ${body.daily_routine}`);
     if (body.stress_level) lines.push(`Stress level: ${body.stress_level}`);
     if (body.emotional_control) lines.push(`Emotional control: ${body.emotional_control}`);
     if (body.situation) lines.push(`\nAdditional context: ${body.situation}`);

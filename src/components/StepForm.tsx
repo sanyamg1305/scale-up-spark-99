@@ -14,11 +14,16 @@ export interface FormData {
   growth_speed: string;
   team_motivation: string;
   team_stability: string;
+  team_feedback: string;
+  team_ownership: string;
   process_clarity: string;
   firefighting_frequency: string;
+  priority_management: string;
   founder_dependency: string;
   delegation_level: string;
+  decision_making: string;
   vision_clarity: string;
+  daily_routine: string;
   stress_level: string;
   emotional_control: string;
   situation: string;
@@ -29,11 +34,16 @@ const INITIAL: FormData = {
   growth_speed: "",
   team_motivation: "",
   team_stability: "",
+  team_feedback: "",
+  team_ownership: "",
   process_clarity: "",
   firefighting_frequency: "",
+  priority_management: "",
   founder_dependency: "",
   delegation_level: "",
+  decision_making: "",
   vision_clarity: "",
+  daily_routine: "",
   stress_level: "",
   emotional_control: "",
   situation: "",
@@ -118,6 +128,28 @@ const steps: Step[] = [
           { label: "Rock Solid", tooltip: "Almost no one leaves - strong loyalty." },
         ],
       },
+      {
+        key: "team_feedback",
+        label: "Do your team members openly share feedback?",
+        tooltip: "Whether people feel safe enough to speak up, share concerns, or suggest improvements.",
+        options: [
+          { label: "Never", tooltip: "No one shares honest feedback — they stay quiet." },
+          { label: "Only When Asked", tooltip: "They'll share if pushed, but never on their own." },
+          { label: "Sometimes", tooltip: "Some team members speak up, but not consistently." },
+          { label: "Openly & Often", tooltip: "Feedback flows freely — everyone feels safe to speak." },
+        ],
+      },
+      {
+        key: "team_ownership",
+        label: "Do people take ownership without being told?",
+        tooltip: "Whether your team proactively solves problems or waits for instructions.",
+        options: [
+          { label: "Never — I Push Everything", tooltip: "Nothing moves unless you tell someone to do it." },
+          { label: "Rarely", tooltip: "Most people wait for direction before acting." },
+          { label: "Some Do", tooltip: "A few team members step up, but not all." },
+          { label: "Yes — They Own It", tooltip: "Your team takes initiative and drives things forward." },
+        ],
+      },
     ],
   },
   {
@@ -144,6 +176,17 @@ const steps: Step[] = [
           { label: "Daily", tooltip: "Unexpected problems pop up almost every day." },
           { label: "Weekly", tooltip: "Urgent issues come up a few times a week." },
           { label: "Rarely", tooltip: "Most of your work is planned and predictable." },
+        ],
+      },
+      {
+        key: "priority_management",
+        label: "How do you manage your priorities?",
+        tooltip: "Whether you have a clear system for deciding what matters most each day and week.",
+        options: [
+          { label: "I React to Whatever Comes", tooltip: "No plan — you deal with whatever feels urgent." },
+          { label: "Mental To-Do List", tooltip: "You keep priorities in your head but nothing written down." },
+          { label: "Basic System", tooltip: "You use lists or tools but don't always stick to them." },
+          { label: "Clear & Disciplined", tooltip: "You plan priorities weekly and follow through consistently." },
         ],
       },
     ],
@@ -174,6 +217,17 @@ const steps: Step[] = [
           { label: "Strong Delegation", tooltip: "You trust your team and hand off confidently." },
         ],
       },
+      {
+        key: "decision_making",
+        label: "How are decisions made in your company?",
+        tooltip: "Whether decisions flow through you alone or are shared across the team.",
+        options: [
+          { label: "Everything Goes Through Me", tooltip: "You make every decision, big and small." },
+          { label: "Mostly Centralized", tooltip: "Most decisions need your approval first." },
+          { label: "Shared on Some Things", tooltip: "Your team makes some decisions independently." },
+          { label: "Distributed & Trusted", tooltip: "Decisions are made by the right people at every level." },
+        ],
+      },
     ],
   },
   {
@@ -189,6 +243,17 @@ const steps: Step[] = [
           { label: "Vague Idea", tooltip: "You have a rough direction but it's not clear." },
           { label: "Fairly Clear", tooltip: "You know your direction and can explain it." },
           { label: "Crystal Clear", tooltip: "Your vision is sharp and your team knows it too." },
+        ],
+      },
+      {
+        key: "daily_routine",
+        label: "How structured is your daily routine?",
+        tooltip: "Whether your day follows a plan or is mostly reactive and unstructured.",
+        options: [
+          { label: "No Routine at All", tooltip: "Every day is different — no consistency." },
+          { label: "Loosely Structured", tooltip: "You have a rough plan but rarely follow it." },
+          { label: "Mostly Structured", tooltip: "Your days have a rhythm with some flexibility." },
+          { label: "Highly Disciplined", tooltip: "You follow a clear daily structure and stick to it." },
         ],
       },
       {
@@ -286,9 +351,8 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
           />
         </div>
 
-        {/* Logo + Step indicator */}
+        {/* Step indicator */}
         <div className="container max-w-2xl pt-6 pb-2 px-6">
-
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <button onClick={prev} className="hover:text-foreground transition-colors font-medium">
               ← Back
