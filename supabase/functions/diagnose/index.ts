@@ -23,6 +23,7 @@ serve(async (req) => {
     if (body.team_ownership) lines.push(`Team ownership: ${body.team_ownership}`);
     if (body.process_clarity) lines.push(`Process clarity: ${body.process_clarity}`);
     if (body.firefighting_frequency) lines.push(`Firefighting frequency: ${body.firefighting_frequency}`);
+    if (body.priority_management) lines.push(`Priority management: ${body.priority_management}`);
     if (body.founder_dependency) lines.push(`Founder dependency: ${body.founder_dependency}`);
     if (body.delegation_level) lines.push(`Delegation level: ${body.delegation_level}`);
     if (body.vision_clarity) lines.push(`Vision clarity: ${body.vision_clarity}`);
