@@ -19,6 +19,8 @@ serve(async (req) => {
     if (body.growth_speed) lines.push(`Growth speed: ${body.growth_speed}`);
     if (body.team_motivation) lines.push(`Team motivation: ${body.team_motivation}`);
     if (body.team_stability) lines.push(`Team stability: ${body.team_stability}`);
+    if (body.team_feedback) lines.push(`Team feedback openness: ${body.team_feedback}`);
+    if (body.team_ownership) lines.push(`Team ownership: ${body.team_ownership}`);
     if (body.process_clarity) lines.push(`Process clarity: ${body.process_clarity}`);
     if (body.firefighting_frequency) lines.push(`Firefighting frequency: ${body.firefighting_frequency}`);
     if (body.founder_dependency) lines.push(`Founder dependency: ${body.founder_dependency}`);
