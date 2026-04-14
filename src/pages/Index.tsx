@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import LandingScreen from "@/components/LandingScreen";
 import StepForm, { type FormData } from "@/components/StepForm";
@@ -9,7 +9,24 @@ import { toast } from "sonner";
 type Screen = "landing" | "form" | "analyzing" | "results";
 
 const Index = () => {
-  const [screen, setScreen] = useState<Screen>("landing");
+  const [screen, setScreen] = useState<Screen>(() => {
+    try {
+      const savedData = localStorage.getItem("skc-form-data");
+      const savedStep = localStorage.getItem("skc-form-step");
+      
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        const hasData = Object.values(parsed).some((v) => v !== "");
+        if (hasData) return "form";
+      }
+      if (savedStep && parseInt(savedStep, 10) > 0) {
+        return "form";
+      }
+    } catch {
+      // Ignore parse errors
+    }
+    return "landing";
+  });
   const [result, setResult] = useState<DiagnosisResult | null>(null);
 
   const handleSubmit = async (data: FormData) => {
