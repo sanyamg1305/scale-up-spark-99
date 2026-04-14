@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   Tooltip,
@@ -49,6 +50,9 @@ const INITIAL: FormData = {
   situation: "",
 };
 
+const STORAGE_KEY = "skc-form-data";
+const STEP_KEY = "skc-form-step";
+
 interface StepFormProps {
   onSubmit: (data: FormData) => void;
   onBack: () => void;
@@ -75,29 +79,29 @@ interface Step {
 
 const steps: Step[] = [
   {
-    title: "Growth Engine",
+    title: "Growth Patterns",
     icon: "🚀",
     questions: [
       {
         key: "revenue_trend",
-        label: "How is your revenue trending?",
-        tooltip: "Is your income going up, staying flat, or going down over the last few months?",
+        label: "How does your revenue appear to be moving?",
+        tooltip: "This invites you to notice the general direction of your income over recent months.",
         options: [
-          { label: "Declining", tooltip: "Your revenue is going down month by month." },
-          { label: "Flat", tooltip: "Revenue is stable but not growing." },
-          { label: "Slow Growth", tooltip: "Revenue is increasing a little each month." },
-          { label: "Fast Growth", tooltip: "Revenue is growing quickly and consistently." },
+          { label: "It seems to be declining", tooltip: "Revenue appears to be decreasing over time." },
+          { label: "It feels flat", tooltip: "Revenue seems stable but without noticeable growth." },
+          { label: "There is some growth", tooltip: "Revenue appears to be increasing gradually." },
+          { label: "It is growing quickly", tooltip: "Revenue seems to be rising at a strong pace." },
         ],
       },
       {
         key: "growth_speed",
-        label: "How fast are you actually growing?",
-        tooltip: "The overall pace of your business growth - customers, revenue, or reach.",
+        label: "What pace of growth do you notice?",
+        tooltip: "This is about the overall momentum you sense across customers, revenue, or reach.",
         options: [
-          { label: "Stagnant", tooltip: "No noticeable growth happening right now." },
-          { label: "Crawling", tooltip: "Growing very slowly - barely noticeable." },
-          { label: "Moderate", tooltip: "Steady growth at a comfortable pace." },
-          { label: "Hypergrowth", tooltip: "Growing extremely fast - hard to keep up." },
+          { label: "Nothing seems to be moving", tooltip: "Growth appears absent right now." },
+          { label: "Very slow movement", tooltip: "There may be slight progress, but it is hard to see." },
+          { label: "Steady and moderate", tooltip: "Things appear to be moving at a comfortable pace." },
+          { label: "Moving very fast", tooltip: "Growth feels rapid and possibly hard to keep up with." },
         ],
       },
     ],
@@ -108,180 +112,180 @@ const steps: Step[] = [
     questions: [
       {
         key: "team_motivation",
-        label: "How motivated is your team right now?",
-        tooltip: "How energized and engaged your team feels about the work they're doing.",
+        label: "What level of energy do you notice in your team?",
+        tooltip: "This is about the engagement and motivation you sense from the people around you.",
         options: [
-          { label: "Checked Out", tooltip: "Your team has mentally disconnected from work." },
-          { label: "Going Through Motions", tooltip: "They show up but aren't truly engaged." },
-          { label: "Engaged", tooltip: "Your team is interested and putting in effort." },
-          { label: "On Fire", tooltip: "Everyone is energized and giving their best." },
+          { label: "They seem disengaged", tooltip: "There may be a sense of disconnection from the work." },
+          { label: "Going through the motions", tooltip: "People show up but the energy feels low." },
+          { label: "Generally engaged", tooltip: "The team appears interested and putting in effort." },
+          { label: "Highly energized", tooltip: "There seems to be strong enthusiasm and drive." },
         ],
       },
       {
         key: "team_stability",
-        label: "How stable is your team?",
-        tooltip: "How often people leave or join your team. High turnover means low stability.",
+        label: "How would you describe the continuity of your team?",
+        tooltip: "This reflects how often the composition of your team changes.",
         options: [
-          { label: "Revolving Door", tooltip: "People leave frequently - hard to keep a team." },
-          { label: "Some Turnover", tooltip: "A few people leave now and then." },
-          { label: "Stable", tooltip: "Your team mostly stays and is reliable." },
-          { label: "Rock Solid", tooltip: "Almost no one leaves - strong loyalty." },
+          { label: "People leave frequently", tooltip: "There appears to be a pattern of high turnover." },
+          { label: "Some people come and go", tooltip: "Occasional changes happen in the team." },
+          { label: "Mostly consistent", tooltip: "The team appears stable with few changes." },
+          { label: "Very stable", tooltip: "There seems to be strong continuity and loyalty." },
         ],
       },
       {
         key: "team_feedback",
-        label: "Do your team members openly share feedback?",
-        tooltip: "Whether people feel safe enough to speak up, share concerns, or suggest improvements.",
+        label: "How openly does feedback seem to flow?",
+        tooltip: "This is about whether people appear to feel safe sharing honest thoughts.",
         options: [
-          { label: "Never", tooltip: "No one shares honest feedback — they stay quiet." },
-          { label: "Only When Asked", tooltip: "They'll share if pushed, but never on their own." },
-          { label: "Sometimes", tooltip: "Some team members speak up, but not consistently." },
-          { label: "Openly & Often", tooltip: "Feedback flows freely — everyone feels safe to speak." },
+          { label: "It rarely happens", tooltip: "Honest feedback does not seem to surface." },
+          { label: "Only when prompted", tooltip: "People may share when asked, but not on their own." },
+          { label: "Sometimes", tooltip: "Some people speak up, but it is not consistent." },
+          { label: "It flows freely", tooltip: "There appears to be a culture of open sharing." },
         ],
       },
       {
         key: "team_ownership",
-        label: "Do people take ownership without being told?",
-        tooltip: "Whether your team proactively solves problems or waits for instructions.",
+        label: "Do people seem to take initiative on their own?",
+        tooltip: "This reflects whether the team appears to act proactively or wait for direction.",
         options: [
-          { label: "Never — I Push Everything", tooltip: "Nothing moves unless you tell someone to do it." },
-          { label: "Rarely", tooltip: "Most people wait for direction before acting." },
-          { label: "Some Do", tooltip: "A few team members step up, but not all." },
-          { label: "Yes — They Own It", tooltip: "Your team takes initiative and drives things forward." },
+          { label: "Everything waits for me", tooltip: "Nothing seems to move without your input." },
+          { label: "Rarely", tooltip: "Most people appear to wait for instructions." },
+          { label: "Some do", tooltip: "A few people step up, but not consistently." },
+          { label: "They drive things forward", tooltip: "The team appears to take ownership naturally." },
         ],
       },
     ],
   },
   {
-    title: "Systems & Operations",
+    title: "Systems & Flow",
     icon: "⚙️",
     questions: [
       {
         key: "process_clarity",
-        label: "How clear are your processes?",
-        tooltip: "Whether your team knows exactly how things should be done, step by step.",
+        label: "How clear do your processes feel?",
+        tooltip: "This is about whether there seems to be a known way of doing things.",
         options: [
-          { label: "Total Chaos", tooltip: "No clear way of doing things - everyone improvises." },
-          { label: "Ad Hoc", tooltip: "Some structure exists but it changes constantly." },
-          { label: "Some SOPs", tooltip: "Key tasks have documented steps to follow." },
-          { label: "Fully Systematized", tooltip: "Everything runs on clear, repeatable processes." },
+          { label: "There are no clear processes", tooltip: "Things seem to happen without a defined way." },
+          { label: "It changes depending on the day", tooltip: "Some structure exists but it shifts often." },
+          { label: "Key things are documented", tooltip: "Important tasks appear to have clear steps." },
+          { label: "Everything runs on systems", tooltip: "There seem to be repeatable processes in place." },
         ],
       },
       {
         key: "firefighting_frequency",
-        label: "How often are you firefighting?",
-        tooltip: "How often you deal with urgent problems instead of planned, important work.",
+        label: "How often do urgent surprises seem to appear?",
+        tooltip: "This reflects how much of your time goes to reacting rather than planning.",
         options: [
-          { label: "All Day Every Day", tooltip: "You spend most of your time on urgent surprises." },
-          { label: "Daily", tooltip: "Unexpected problems pop up almost every day." },
-          { label: "Weekly", tooltip: "Urgent issues come up a few times a week." },
-          { label: "Rarely", tooltip: "Most of your work is planned and predictable." },
+          { label: "Almost constantly", tooltip: "Most of the time seems spent on unexpected problems." },
+          { label: "Most days", tooltip: "Urgent things appear to come up nearly every day." },
+          { label: "A few times a week", tooltip: "Surprises happen but not every day." },
+          { label: "Rarely", tooltip: "Most work appears planned and predictable." },
         ],
       },
       {
         key: "priority_management",
-        label: "How do you manage your priorities?",
-        tooltip: "Whether you have a clear system for deciding what matters most each day and week.",
+        label: "How do priorities seem to get managed?",
+        tooltip: "This is about the system, if any, that guides what gets attention.",
         options: [
-          { label: "I React to Whatever Comes", tooltip: "No plan — you deal with whatever feels urgent." },
-          { label: "Mental To-Do List", tooltip: "You keep priorities in your head but nothing written down." },
-          { label: "Basic System", tooltip: "You use lists or tools but don't always stick to them." },
-          { label: "Clear & Disciplined", tooltip: "You plan priorities weekly and follow through consistently." },
+          { label: "I react to whatever comes up", tooltip: "There does not appear to be a priority system." },
+          { label: "It stays in my head", tooltip: "Priorities exist mentally but are not written down." },
+          { label: "There is a basic system", tooltip: "Lists or tools are used but not always followed." },
+          { label: "Planned and followed through", tooltip: "Priorities appear to be set and honored consistently." },
         ],
       },
     ],
   },
   {
-    title: "Leadership Load",
+    title: "Leadership Patterns",
     icon: "👑",
     questions: [
       {
         key: "founder_dependency",
-        label: "How dependent is the business on you?",
-        tooltip: "How much your business depends on you to make decisions or run daily work.",
+        label: "How much does the business seem to depend on you?",
+        tooltip: "This reflects whether the system appears to rely heavily on your presence.",
         options: [
-          { label: "Nothing Works Without Me", tooltip: "The business stops if you step away." },
-          { label: "Most Things Need Me", tooltip: "Most decisions and tasks still go through you." },
-          { label: "Some Things", tooltip: "Your team handles most things independently." },
-          { label: "Runs Without Me", tooltip: "The business operates smoothly without you daily." },
+          { label: "Nothing moves without me", tooltip: "The business appears to stop if you step away." },
+          { label: "Most things need me", tooltip: "Most decisions and tasks seem to go through you." },
+          { label: "Some things still need me", tooltip: "The team handles most things but some require you." },
+          { label: "It runs independently", tooltip: "The business appears to operate without you daily." },
         ],
       },
       {
         key: "delegation_level",
-        label: "How well do you delegate?",
-        tooltip: "How comfortable you are handing off tasks and trusting others to do them.",
+        label: "How naturally does delegation seem to happen?",
+        tooltip: "This reflects how comfortable you appear with handing things off.",
         options: [
-          { label: "I Do Everything", tooltip: "You handle almost all tasks yourself." },
-          { label: "Barely Delegate", tooltip: "You hand off very little - most stays with you." },
-          { label: "Moderate", tooltip: "You delegate some tasks but keep key ones." },
-          { label: "Strong Delegation", tooltip: "You trust your team and hand off confidently." },
+          { label: "I do almost everything", tooltip: "Most tasks seem to stay with you." },
+          { label: "Very little gets delegated", tooltip: "You hand off only small things." },
+          { label: "Some things get shared", tooltip: "Delegation happens but selectively." },
+          { label: "It happens naturally", tooltip: "Tasks appear to flow to the right people easily." },
         ],
       },
       {
         key: "decision_making",
-        label: "How are decisions made in your company?",
-        tooltip: "Whether decisions flow through you alone or are shared across the team.",
+        label: "How do decisions seem to get made?",
+        tooltip: "This reflects whether decision-making appears centralized or distributed.",
         options: [
-          { label: "Everything Goes Through Me", tooltip: "You make every decision, big and small." },
-          { label: "Mostly Centralized", tooltip: "Most decisions need your approval first." },
-          { label: "Shared on Some Things", tooltip: "Your team makes some decisions independently." },
-          { label: "Distributed & Trusted", tooltip: "Decisions are made by the right people at every level." },
+          { label: "Everything goes through me", tooltip: "You appear to make every decision." },
+          { label: "Most need my approval", tooltip: "Most decisions seem to require your sign-off." },
+          { label: "Some are shared", tooltip: "The team makes some decisions independently." },
+          { label: "Distributed across the team", tooltip: "Decisions appear to be made by the right people." },
         ],
       },
     ],
   },
   {
-    title: "Clarity & Wellbeing",
+    title: "Clarity & Inner State",
     icon: "🧭",
     questions: [
       {
         key: "vision_clarity",
-        label: "How clear is your vision?",
-        tooltip: "How well you can describe where your business is heading and why it matters.",
+        label: "How clear does your direction feel?",
+        tooltip: "This is about whether the path forward seems well-defined and understood.",
         options: [
-          { label: "No Clue", tooltip: "You're unsure where the business is heading." },
-          { label: "Vague Idea", tooltip: "You have a rough direction but it's not clear." },
-          { label: "Fairly Clear", tooltip: "You know your direction and can explain it." },
-          { label: "Crystal Clear", tooltip: "Your vision is sharp and your team knows it too." },
+          { label: "It feels unclear", tooltip: "The direction does not seem well-defined." },
+          { label: "There is a vague sense", tooltip: "A rough direction exists but it is not sharp." },
+          { label: "Fairly clear", tooltip: "The direction seems defined and explainable." },
+          { label: "Very clear", tooltip: "The vision appears sharp and shared across the team." },
         ],
       },
       {
         key: "daily_routine",
-        label: "How structured is your daily routine?",
-        tooltip: "Whether your day follows a plan or is mostly reactive and unstructured.",
+        label: "How structured does your day feel?",
+        tooltip: "This reflects whether your days seem to follow a rhythm or feel reactive.",
         options: [
-          { label: "No Routine at All", tooltip: "Every day is different — no consistency." },
-          { label: "Loosely Structured", tooltip: "You have a rough plan but rarely follow it." },
-          { label: "Mostly Structured", tooltip: "Your days have a rhythm with some flexibility." },
-          { label: "Highly Disciplined", tooltip: "You follow a clear daily structure and stick to it." },
+          { label: "No routine at all", tooltip: "Every day feels different with no consistency." },
+          { label: "Loosely structured", tooltip: "There is a rough plan but it rarely holds." },
+          { label: "Mostly structured", tooltip: "Days seem to have a rhythm with some flexibility." },
+          { label: "Highly disciplined", tooltip: "A clear daily structure appears to be followed." },
         ],
       },
       {
         key: "stress_level",
-        label: "What's your stress level?",
-        tooltip: "How much pressure you're feeling day to day as a founder.",
+        label: "What does your stress level feel like?",
+        tooltip: "This is about the pressure you sense in your day-to-day experience.",
         options: [
-          { label: "Breaking Point", tooltip: "You feel overwhelmed and close to burnout." },
-          { label: "Constantly Stressed", tooltip: "Stress is always there in the background." },
-          { label: "Manageable", tooltip: "Some stress but you can handle it." },
-          { label: "Calm & Focused", tooltip: "You feel in control and clear-headed." },
+          { label: "It feels overwhelming", tooltip: "There may be a sense of approaching burnout." },
+          { label: "Always present", tooltip: "Stress seems to be a constant background presence." },
+          { label: "Manageable", tooltip: "Some stress exists but it feels contained." },
+          { label: "Calm and focused", tooltip: "There appears to be a sense of control and clarity." },
         ],
       },
       {
         key: "emotional_control",
         label: "How steady do you feel emotionally?",
-        tooltip: "How well you handle tough moments without reacting impulsively.",
+        tooltip: "This reflects how you seem to experience tough moments.",
         options: [
-          { label: "Very Reactive", tooltip: "Small things can throw you off quickly." },
-          { label: "Often Triggered", tooltip: "Tough moments tend to affect your mood." },
-          { label: "Mostly Steady", tooltip: "You stay calm most of the time." },
-          { label: "Fully Grounded", tooltip: "You handle pressure without losing composure." },
+          { label: "Small things throw me off", tooltip: "Reactions may come quickly to minor events." },
+          { label: "Tough moments affect my mood", tooltip: "Difficult situations tend to shift your state." },
+          { label: "Mostly steady", tooltip: "You appear to stay calm most of the time." },
+          { label: "Fully grounded", tooltip: "Pressure does not seem to shift your composure." },
         ],
       },
     ],
   },
   {
-    title: "Your Situation",
+    title: "Your Reflection",
     icon: "✍️",
     questions: [],
     hasTextarea: true,
@@ -310,8 +314,55 @@ steps.forEach((step, si) => {
 });
 
 const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [data, setData] = useState<FormData>(INITIAL);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const saved = localStorage.getItem(STEP_KEY);
+    return saved ? Math.min(parseInt(saved, 10), flatSteps.length - 1) : 0;
+  });
+  const [data, setData] = useState<FormData>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return { ...INITIAL, ...parsed };
+      } catch { /* ignore */ }
+    }
+    return INITIAL;
+  });
+  const [restored, setRestored] = useState(false);
+
+  // Show restored message on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const hasData = Object.values(parsed).some((v) => v !== "");
+        if (hasData) {
+          setRestored(true);
+          toast.info("Your previous inputs have been restored");
+        }
+      } catch { /* ignore */ }
+    }
+  }, []);
+
+  // Auto-save data and step
+  const updateData = useCallback((newData: FormData) => {
+    setData(newData);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(STEP_KEY, String(currentIndex));
+  }, [currentIndex]);
+
+  const startFresh = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STEP_KEY);
+    setData(INITIAL);
+    setCurrentIndex(0);
+    setRestored(false);
+    toast.success("Starting fresh");
+  };
 
   const current = flatSteps[currentIndex];
   const total = flatSteps.length;
@@ -325,7 +376,11 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
 
   const next = () => {
     if (currentIndex < total - 1) setCurrentIndex(currentIndex + 1);
-    else onSubmit(data);
+    else {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STEP_KEY);
+      onSubmit(data);
+    }
   };
 
   const prev = () => {
@@ -334,7 +389,7 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
   };
 
   const selectOption = (key: keyof FormData, value: string) => {
-    setData({ ...data, [key]: value });
+    updateData({ ...data, [key]: value });
     setTimeout(() => {
       if (currentIndex < total - 1) setCurrentIndex(currentIndex + 1);
     }, 300);
@@ -363,6 +418,21 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
             <span className="tabular-nums">{currentIndex + 1}/{total}</span>
           </div>
         </div>
+
+        {/* Restored banner */}
+        {restored && currentIndex === 0 && (
+          <div className="container max-w-2xl px-6 pt-2">
+            <div className="flex items-center justify-between bg-primary/10 border border-primary/20 rounded-lg px-4 py-2.5 text-sm">
+              <span className="text-foreground">Your previous inputs have been restored</span>
+              <button
+                onClick={startFresh}
+                className="text-primary font-medium hover:underline text-xs"
+              >
+                Start Fresh
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Content */}
         <div className="flex-1 flex items-center justify-center px-6 pb-20">
@@ -420,15 +490,15 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
             {current.hasTextarea && (
               <div className="space-y-6">
                 <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground leading-tight">
-                  Tell us about your business right now
+                  Share what is present for you right now
                 </h2>
                 <p className="text-muted-foreground text-sm">
-                  Share what's on your mind. The more you share, the more helpful your results will be.
+                  There are no right or wrong answers. Simply describe what you notice about your business and leadership at this moment.
                 </p>
                 <textarea
                   value={data.situation}
-                  onChange={(e) => setData({ ...data, situation: e.target.value })}
-                  placeholder="Revenue is growing but my team keeps leaving. I'm working long hours and things don't feel sustainable…"
+                  onChange={(e) => updateData({ ...data, situation: e.target.value })}
+                  placeholder="Revenue is growing but my team keeps leaving. I am working long hours and things do not feel sustainable…"
                   className="w-full min-h-[180px] rounded-xl border-2 border-border bg-card px-5 py-4 text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary focus:ring-0 resize-y font-body transition-colors"
                 />
                 <Button
@@ -437,7 +507,7 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
                   onClick={next}
                   className="w-full py-6 text-base"
                 >
-                  Get My Results →
+                  See My Reflection →
                 </Button>
               </div>
             )}

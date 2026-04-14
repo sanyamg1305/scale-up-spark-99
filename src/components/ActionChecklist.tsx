@@ -33,14 +33,13 @@ const ActionChecklist = ({ quests }: ActionChecklistProps) => {
     <div className="rounded-xl border border-border bg-card p-6 md:p-8 space-y-5">
       <div className="flex items-center justify-between">
         <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-          ✅ Your Action Checklist
+          ✅ Areas to Examine - Checklist
         </h3>
         <span className="text-xs font-display font-semibold text-primary">
-          {done}/{total} done
+          {done}/{total} explored
         </span>
       </div>
 
-      {/* Progress bar */}
       <div className="w-full h-2 rounded-full bg-secondary overflow-hidden">
         <div
           className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
@@ -77,7 +76,7 @@ const ActionChecklist = ({ quests }: ActionChecklistProps) => {
       {done === total && total > 0 && (
         <div className="text-center py-3">
           <p className="text-primary font-display font-bold text-sm">
-            🎉 All actions complete! You're on your way to SSJ.
+            🎉 All areas explored. You are moving toward Success | State | Joy.
           </p>
         </div>
       )}

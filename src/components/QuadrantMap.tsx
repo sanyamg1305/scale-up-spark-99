@@ -30,7 +30,6 @@ const QuadrantMap = ({ entrepreneurshipScore, consciousnessScore }: QuadrantMapP
           <div className="absolute top-0 bottom-0 left-1/2 w-px bg-border" />
           <div className="absolute left-0 right-0 top-1/2 h-px bg-border" />
 
-          {/* Axis labels */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-6 text-[10px] font-display uppercase tracking-wider text-muted-foreground">
             Execution Energy →
           </div>
@@ -47,6 +46,9 @@ const QuadrantMap = ({ entrepreneurshipScore, consciousnessScore }: QuadrantMapP
           </div>
         </div>
       </div>
+      <p className="text-[10px] text-muted-foreground/40 text-center">
+        Based on the Conscious Entrepreneurship Quadrant© framework.
+      </p>
     </div>
   );
 };

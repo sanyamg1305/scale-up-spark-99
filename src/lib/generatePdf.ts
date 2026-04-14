@@ -53,7 +53,7 @@ export function generateReport(result: DiagnosisResult) {
     y += lines.length * 5 + 3;
   };
 
-  // ── Header ──
+  // Header
   doc.setFillColor(15, 15, 15);
   doc.rect(0, 0, W, 45, "F");
   doc.setFont("helvetica", "bold");
@@ -63,13 +63,13 @@ export function generateReport(result: DiagnosisResult) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(...gold);
-  doc.text("Your Success | Scale | Joy (SSJ) Report", margin, 28);
+  doc.text("Your Success | State | Joy (SSJ) Reflection Report", margin, 28);
   doc.setFontSize(8);
   doc.setTextColor(160, 160, 160);
   doc.text(`Generated: ${new Date().toLocaleDateString()}`, margin, 36);
   y = 55;
 
-  // ── Summary ──
+  // Summary
   heading("Summary", "📊");
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
@@ -87,13 +87,13 @@ export function generateReport(result: DiagnosisResult) {
   doc.text(`Alignment Energy: ${result.consciousness_score}/100`, margin, y);
   y += 10;
 
-  // ── Insights ──
-  heading("What's Happening", "🧠");
+  // What May Be Noticed
+  heading("What May Be Noticed", "🧠");
   result.insights.forEach((i) => bullet(i));
   y += 4;
 
-  // ── Business Leaks ──
-  heading("What Needs Attention", "⚠️");
+  // What May Be Unresolved
+  heading("What May Be Unresolved", "⚠️");
   result.business_leaks.forEach((leak) => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
@@ -109,8 +109,8 @@ export function generateReport(result: DiagnosisResult) {
   });
   y += 2;
 
-  // ── Next Steps ──
-  heading("Your Next Steps", "🎯");
+  // Areas to Examine
+  heading("Areas to Examine", "🎯");
   result.quest_chain.forEach((quest) => {
     checkPage(24);
     doc.setFont("helvetica", "bold");
@@ -123,12 +123,12 @@ export function generateReport(result: DiagnosisResult) {
     bodyText(quest.objective, 4);
     bodyText(`Action: ${quest.action}`, 4);
     doc.setTextColor(...muted);
-    bodyText(`Reward: ${quest.reward}`, 4);
+    bodyText(`Outcome: ${quest.reward}`, 4);
     y += 2;
   });
 
-  // ── Action Checklist ──
-  heading("Action Checklist", "✅");
+  // Action Checklist
+  heading("Checklist", "✅");
   result.quest_chain.forEach((quest) => {
     const actions = quest.action.split(/[.;]\s*/).filter(Boolean);
     actions.forEach((a) => {
@@ -144,13 +144,13 @@ export function generateReport(result: DiagnosisResult) {
   });
   y += 4;
 
-  // ── What This Means ──
-  heading("What This Means for You", "🌱");
+  // What This May Mean
+  heading("What This May Mean for You", "🌱");
   bodyText(result.future_warning);
   y += 4;
 
-  // ── Path Forward ──
-  heading("Your Path to SSJ", "🚀");
+  // Path Toward SSJ
+  heading("Path Toward SSJ", "🚀");
   result.path_to_ssj.forEach((step, i) => {
     checkPage(8);
     doc.setFont("helvetica", "bold");
@@ -164,7 +164,7 @@ export function generateReport(result: DiagnosisResult) {
     y += lines.length * 5 + 3;
   });
 
-  // ── Footer ──
+  // Footer
   checkPage(20);
   y += 6;
   doc.setDrawColor(...gold);
@@ -174,8 +174,8 @@ export function generateReport(result: DiagnosisResult) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(...muted);
-  doc.text("SKC.World — Conscious Entrepreneurship Framework", margin, y);
+  doc.text("SKC.World - Based on the Conscious Entrepreneurship Quadrant© framework.", margin, y);
   doc.text("Ready for Step 2? Book your Leadership Reflection Call", margin, y + 5);
 
-  doc.save("SSJ-Report.pdf");
+  doc.save("SSJ-Reflection-Report.pdf");
 }
