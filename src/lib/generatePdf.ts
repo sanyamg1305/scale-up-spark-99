@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import type { DiagnosisResult } from "@/components/ResultsScreen";
 
-export function generateReport(result: DiagnosisResult) {
+export async function generateReport(result: DiagnosisResult) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
   const margin = 20;
@@ -56,14 +56,23 @@ export function generateReport(result: DiagnosisResult) {
   // Header
   doc.setFillColor(15, 15, 15);
   doc.rect(0, 0, W, 45, "F");
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.setTextColor(255, 255, 255);
-  doc.text("SKC.World", margin, 18);
+
+  try {
+    const imgData = await fetch("/logo.png").then((res) => res.arrayBuffer());
+    const uint8Array = new Uint8Array(imgData);
+    doc.addImage(uint8Array, "PNG", margin, 10, 20, 20);
+  } catch (err) {
+    console.error("Failed to load logo for PDF", err);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255);
+    doc.text("SKC.World", margin, 18);
+  }
+
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(...gold);
-  doc.text("Your Success | State | Joy (SSJ) Reflection Report", margin, 28);
+  doc.text("Your Success | Scale | Joy Reflection Report", margin, 32);
   doc.setFontSize(8);
   doc.setTextColor(160, 160, 160);
   doc.text(`Generated: ${new Date().toLocaleDateString()}`, margin, 36);
@@ -149,8 +158,8 @@ export function generateReport(result: DiagnosisResult) {
   bodyText(result.future_warning);
   y += 4;
 
-  // Path Toward SSJ
-  heading("Path Toward SSJ", "🚀");
+  // Path Toward Success | Scale | Joy
+  heading("Path Toward Success | Scale | Joy", "🚀");
   result.path_to_ssj.forEach((step, i) => {
     checkPage(8);
     doc.setFont("helvetica", "bold");
@@ -177,5 +186,5 @@ export function generateReport(result: DiagnosisResult) {
   doc.text("SKC.World - Based on the Conscious Entrepreneurship Quadrant© framework.", margin, y);
   doc.text("Ready for Step 2? Book your Leadership Reflection Call", margin, y + 5);
 
-  doc.save("SSJ-Reflection-Report.pdf");
+  doc.save("Success-Scale-Joy-Reflection-Report.pdf");
 }

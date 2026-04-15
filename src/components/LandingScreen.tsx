@@ -8,7 +8,12 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
       <div className="text-center space-y-10 max-w-xl animate-in fade-in slide-in-from-bottom-6 duration-700">
-        <div className="space-y-4">
+        <div className="space-y-6">
+          <img 
+            src="/logo.png" 
+            alt="Scale & Clarity OS Logo" 
+            className="h-20 md:h-24 mx-auto object-contain animate-in fade-in slide-in-from-top-4 duration-1000"
+          />
           <h1 className="font-display text-5xl md:text-6xl font-bold text-foreground tracking-tight">
             Scale & Clarity OS
           </h1>

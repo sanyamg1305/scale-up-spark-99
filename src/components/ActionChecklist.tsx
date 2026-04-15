@@ -76,7 +76,7 @@ const ActionChecklist = ({ quests }: ActionChecklistProps) => {
       {done === total && total > 0 && (
         <div className="text-center py-3">
           <p className="text-primary font-display font-bold text-sm">
-            🎉 All areas explored. You are moving toward Success | State | Joy.
+            🎉 All areas explored. You are moving toward Success | Scale | Joy.
           </p>
         </div>
       )}

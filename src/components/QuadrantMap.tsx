@@ -18,7 +18,7 @@ const QuadrantMap = ({ entrepreneurshipScore, consciousnessScore }: QuadrantMapP
             Stagnation
           </div>
           <div className="absolute top-3 right-3 text-[10px] font-display uppercase tracking-wider text-primary/60">
-            SSJ ✦
+            Success | Scale | Joy ✦
           </div>
           <div className="absolute bottom-3 left-3 text-[10px] font-display uppercase tracking-wider text-muted-foreground/50">
             Survival

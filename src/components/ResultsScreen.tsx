@@ -26,7 +26,7 @@ const stateConfig: Record<string, { emoji: string; color: string; ctaText: strin
   Burnout: { emoji: "🔥", color: "text-destructive", ctaText: "There may be an opportunity to create more space and balance" },
   Survival: { emoji: "⚠️", color: "text-gold-dim", ctaText: "It may be worth exploring what could shift the current momentum" },
   Stagnation: { emoji: "🧊", color: "text-muted-foreground", ctaText: "There appears to be clarity that could be channeled into movement" },
-  SSJ: { emoji: "🚀", color: "text-primary", ctaText: "The patterns suggest readiness for Success | State | Joy" },
+  SSJ: { emoji: "🚀", color: "text-primary", ctaText: "The patterns suggest readiness for Success | Scale | Joy" },
 };
 
 const leakIcons: Record<string, string> = {
@@ -43,8 +43,13 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
     <div className="min-h-screen bg-background">
       <div className="container max-w-3xl py-10 px-6 space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
 
+        {/* Brand Logo */}
+        <div className="flex justify-center pt-4">
+          <img src="/logo.png" alt="Scale & Clarity OS" className="h-12 w-auto object-contain" />
+        </div>
+
         {/* Deliberate pause positioning */}
-        <div className="text-center pt-6">
+        <div className="text-center">
           <p className="text-xs text-muted-foreground/50 italic max-w-md mx-auto leading-relaxed">
             This is a structured pause from operational momentum, to examine what may otherwise go unnoticed.
           </p>
@@ -172,7 +177,7 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
         {/* PATH TO SSJ */}
         <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 md:p-8 space-y-4">
           <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-primary">
-            🚀 Path Toward Success | State | Joy (SSJ)
+            🚀 Path Toward Success | Scale | Joy
           </h3>
           <div className="space-y-3">
             {result.path_to_ssj.map((step, i) => (
@@ -191,7 +196,7 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           <Button
             variant="outline"
             size="lg"
-            onClick={() => generateReport(result)}
+            onClick={async () => await generateReport(result)}
             className="gap-2 px-8"
           >
             <Download size={18} />
@@ -223,7 +228,12 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
             </div>
           </div>
 
-          <Button variant="gold" size="lg" className="px-10 py-6 text-base w-full max-w-md">
+          <Button 
+            variant="gold" 
+            size="lg" 
+            className="px-10 py-6 text-base w-full max-w-md"
+            onClick={() => window.open("https://calendly.com/divya-conscious-entrepreneurship/new-meeting", "_blank")}
+          >
             Book Your Leadership Reflection Call
           </Button>
 

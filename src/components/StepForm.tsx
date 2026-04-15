@@ -412,9 +412,12 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
             <button onClick={prev} className="hover:text-foreground transition-colors font-medium">
               ← Back
             </button>
-            <span className="font-display font-semibold uppercase tracking-[0.2em]">
-              {current.icon} {current.title}
-            </span>
+            <div className="flex flex-col items-center gap-1">
+              <img src="/logo.png" alt="Logo" className="h-6 w-auto object-contain" />
+              <span className="font-display font-semibold uppercase tracking-[0.2em]">
+                {current.icon} {current.title}
+              </span>
+            </div>
             <span className="tabular-nums">{currentIndex + 1}/{total}</span>
           </div>
         </div>
