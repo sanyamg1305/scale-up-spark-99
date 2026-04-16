@@ -193,12 +193,21 @@ Keep everything human, simple, and reflective. The user should feel seen, not ju
     }
 
     const diagnosis = JSON.parse(toolCall.function.arguments);
-    
-    // Normalize: Gemini sometimes returns path_to_ssj instead of path_to_success_scale_joy
-    if (diagnosis.path_to_ssj && !diagnosis.path_to_success_scale_joy) {
-      diagnosis.path_to_success_scale_joy = diagnosis.path_to_ssj;
-      delete diagnosis.path_to_ssj;
+
+    if (diagnosis.state === "SSJ" || diagnosis.state === "Success | State | Joy") {
+      diagnosis.state = "Success | Scale | Joy";
     }
+
+    // Normalize: Gemini sometimes returns path_to_ssj instead of path_to_success_scale_joy
+    if (Array.isArray(diagnosis.path_to_ssj) && !diagnosis.path_to_success_scale_joy) {
+      diagnosis.path_to_success_scale_joy = diagnosis.path_to_ssj;
+    }
+
+    if (!Array.isArray(diagnosis.path_to_success_scale_joy)) {
+      diagnosis.path_to_success_scale_joy = [];
+    }
+
+    delete diagnosis.path_to_ssj;
     
     return new Response(JSON.stringify(diagnosis), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

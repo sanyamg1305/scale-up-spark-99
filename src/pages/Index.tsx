@@ -9,11 +9,110 @@ import { STORAGE_KEYS } from "@/lib/constants";
 
 type Screen = "landing" | "form" | "analyzing" | "results";
 
+const isString = (value: unknown): value is string => typeof value === "string";
+
+const normalizeState = (value: unknown) => {
+  if (value === "SSJ" || value === "Success | State | Joy") {
+    return "Success | Scale | Joy";
+  }
+
+  return isString(value) ? value : "Burnout";
+};
+
+const normalizeDiagnosisResult = (value: unknown): DiagnosisResult | null => {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const payload =
+    record.data && typeof record.data === "object"
+      ? (record.data as Record<string, unknown>)
+      : record;
+
+  const state = normalizeState(payload.state);
+  const fallbackIdentity =
+    state === "Survival"
+      ? "The Stuck Dreamer"
+      : state === "Stagnation"
+        ? "The Comfortable Drifter"
+        : state === "Success | Scale | Joy"
+          ? "The Aligned Scaler"
+          : "The Overloaded Operator";
+
+  const businessLeaks = Array.isArray(payload.business_leaks)
+    ? payload.business_leaks
+        .map((item) => {
+          if (
+            typeof item === "object" &&
+            item !== null &&
+            isString((item as { type?: unknown }).type) &&
+            isString((item as { description?: unknown }).description)
+          ) {
+            const leak = item as { type: string; description: string };
+            return { type: leak.type, description: leak.description };
+          }
+
+          return null;
+        })
+        .filter((item): item is DiagnosisResult["business_leaks"][number] => item !== null)
+    : [];
+
+  const questChain = Array.isArray(payload.quest_chain)
+    ? payload.quest_chain
+        .map((item) => {
+          if (
+            typeof item === "object" &&
+            item !== null &&
+            typeof (item as { level?: unknown }).level === "number" &&
+            isString((item as { name?: unknown }).name) &&
+            isString((item as { objective?: unknown }).objective) &&
+            isString((item as { action?: unknown }).action) &&
+            isString((item as { reward?: unknown }).reward)
+          ) {
+            const quest = item as DiagnosisResult["quest_chain"][number];
+            return {
+              level: quest.level,
+              name: quest.name,
+              objective: quest.objective,
+              action: quest.action,
+              reward: quest.reward,
+            };
+          }
+
+          return null;
+        })
+        .filter((item): item is DiagnosisResult["quest_chain"][number] => item !== null)
+    : [];
+
+  const pathToSuccessScaleJoy = (
+    Array.isArray(payload.path_to_success_scale_joy)
+      ? payload.path_to_success_scale_joy
+      : Array.isArray(payload.path_to_ssj)
+        ? payload.path_to_ssj
+        : []
+  ).filter(isString);
+
+  return {
+    state,
+    identity: isString(payload.identity) ? payload.identity : fallbackIdentity,
+    entrepreneurship_score:
+      typeof payload.entrepreneurship_score === "number" ? payload.entrepreneurship_score : 0,
+    consciousness_score:
+      typeof payload.consciousness_score === "number" ? payload.consciousness_score : 0,
+    insights: Array.isArray(payload.insights) ? payload.insights.filter(isString) : [],
+    business_leaks: businessLeaks,
+    quest_chain: questChain,
+    future_warning: isString(payload.future_warning) ? payload.future_warning : "",
+    path_to_success_scale_joy: pathToSuccessScaleJoy,
+  };
+};
+
 const Index = () => {
   const [result, setResult] = useState<DiagnosisResult | null>(() => {
     try {
       const savedResult = localStorage.getItem(STORAGE_KEYS.RESULT);
-      return savedResult ? JSON.parse(savedResult) : null;
+      return savedResult ? normalizeDiagnosisResult(JSON.parse(savedResult)) : null;
     } catch {
       return null;
     }
@@ -28,8 +127,8 @@ const Index = () => {
       // regardless of what the screen key says (unless it's explicitly been cleared)
       if (savedResult) {
         try {
-          JSON.parse(savedResult);
-          return "results";
+          const normalizedResult = normalizeDiagnosisResult(JSON.parse(savedResult));
+          if (normalizedResult) return "results";
         } catch { /* corrupted result, fall back */ }
       }
 
@@ -103,10 +202,18 @@ const Index = () => {
       // Small delay for the "analyzing" feel
       await new Promise((r) => setTimeout(r, 1500));
       
-      // Note: We NO LONGER clear form data here. 
+      const normalizedResult = normalizeDiagnosisResult(res);
+
+      if (!normalizedResult) {
+        toast.error("The reflection could not be loaded. Please try again.");
+        setScreen("form");
+        return;
+      }
+
+      // Note: We NO LONGER clear form data here.
       // We keep it until the user clicks "Begin Another Reflection"
-      
-      setResult(res as DiagnosisResult);
+
+      setResult(normalizedResult);
       setScreen("results");
     } catch {
       toast.error("Failed to connect. Please check your connection and try again.");
