@@ -160,7 +160,7 @@ export async function generateReport(result: DiagnosisResult) {
 
   // Path Toward Success | Scale | Joy
   heading("Path Toward Success | Scale | Joy", "🚀");
-  result.path_to_ssj.forEach((step, i) => {
+  result.path_to_success_scale_joy.forEach((step, i) => {
     checkPage(8);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);

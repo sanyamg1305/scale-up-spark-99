@@ -77,14 +77,14 @@ State mapping:
 - High Execution (>60) + Low Alignment (<40) -> Burnout
 - Low Execution (<40) + Low Alignment (<40) -> Survival
 - Low Execution (<40) + High Alignment (>60) -> Stagnation
-- High Execution (>60) + High Alignment (>60) -> SSJ (Success | State | Joy)
+- High Execution (>60) + High Alignment (>60) -> Success | Scale | Joy
 - Mixed -> use best judgment
 
 Identity mapping:
 - Burnout -> "The Overloaded Operator"
 - Survival -> "The Stuck Dreamer"
 - Stagnation -> "The Comfortable Drifter"
-- SSJ -> "The Aligned Scaler"
+- Success | Scale | Joy -> "The Aligned Scaler"
 
 Requirements:
 - 3 observations about what may be noticed (observational, reflective - NOT instructive)
@@ -120,7 +120,7 @@ Keep everything human, simple, and reflective. The user should feel seen, not ju
               parameters: {
                 type: "object",
                 properties: {
-                  state: { type: "string", enum: ["Burnout", "Survival", "Stagnation", "SSJ"] },
+                  state: { type: "string", enum: ["Burnout", "Survival", "Stagnation", "Success | Scale | Joy"] },
                   identity: { type: "string", enum: ["The Overloaded Operator", "The Stuck Dreamer", "The Comfortable Drifter", "The Aligned Scaler"] },
                   entrepreneurship_score: { type: "number", description: "Execution Energy score (0-100)" },
                   consciousness_score: { type: "number", description: "Alignment Energy score (0-100)" },
@@ -154,9 +154,9 @@ Keep everything human, simple, and reflective. The user should feel seen, not ju
                     },
                   },
                   future_warning: { type: "string", description: "Reflective, observational summary. NO fear tactics. Use 'It may appear...' language." },
-                  path_to_ssj: { type: "array", items: { type: "string" }, description: "3 simple invitations to examine - not directives" },
+                  path_to_success_scale_joy: { type: "array", items: { type: "string" }, description: "3 simple invitations to examine - not directives" },
                 },
-                required: ["state", "identity", "entrepreneurship_score", "consciousness_score", "insights", "business_leaks", "quest_chain", "future_warning", "path_to_ssj"],
+                required: ["state", "identity", "entrepreneurship_score", "consciousness_score", "insights", "business_leaks", "quest_chain", "future_warning", "path_to_success_scale_joy"],
                 additionalProperties: false,
               },
             },

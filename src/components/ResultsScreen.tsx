@@ -14,7 +14,7 @@ export interface DiagnosisResult {
   business_leaks: { type: string; description: string }[];
   quest_chain: { level: number; name: string; objective: string; action: string; reward: string }[];
   future_warning: string;
-  path_to_ssj: string[];
+  path_to_success_scale_joy: string[];
 }
 
 interface ResultsScreenProps {
@@ -26,7 +26,7 @@ const stateConfig: Record<string, { emoji: string; color: string; ctaText: strin
   Burnout: { emoji: "🔥", color: "text-destructive", ctaText: "There may be an opportunity to create more space and balance" },
   Survival: { emoji: "⚠️", color: "text-gold-dim", ctaText: "It may be worth exploring what could shift the current momentum" },
   Stagnation: { emoji: "🧊", color: "text-muted-foreground", ctaText: "There appears to be clarity that could be channeled into movement" },
-  SSJ: { emoji: "🚀", color: "text-primary", ctaText: "The patterns suggest readiness for Success | Scale | Joy" },
+  "Success | Scale | Joy": { emoji: "🚀", color: "text-primary", ctaText: "The patterns suggest readiness for Success | Scale | Joy" },
 };
 
 const leakIcons: Record<string, string> = {
@@ -174,13 +174,13 @@ const ResultsScreen = ({ result, onRestart }: ResultsScreenProps) => {
           </p>
         </div>
 
-        {/* PATH TO SSJ */}
+        {/* PATH TO SUCCESS | SCALE | JOY */}
         <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 md:p-8 space-y-4">
           <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-primary">
             🚀 Path Toward Success | Scale | Joy
           </h3>
           <div className="space-y-3">
-            {result.path_to_ssj.map((step, i) => (
+            {result.path_to_success_scale_joy.map((step, i) => (
               <div key={i} className="flex items-start gap-3">
                 <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-display font-bold text-xs shrink-0 mt-0.5">
                   {i + 1}

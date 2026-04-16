@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface ChecklistItem {
@@ -11,16 +11,36 @@ interface ActionChecklistProps {
   quests: { level: number; name: string; action: string }[];
 }
 
+const CHECKLIST_KEY = "skc-checklist-state";
+
 const ActionChecklist = ({ quests }: ActionChecklistProps) => {
-  const [items, setItems] = useState<ChecklistItem[]>(() =>
-    quests.flatMap((quest, qi) =>
+  const [items, setItems] = useState<ChecklistItem[]>(() => {
+    const defaultItems = quests.flatMap((quest, qi) =>
       quest.action.split(/[.;]\s*/).filter(Boolean).map((action, ai) => ({
         id: `${qi}-${ai}`,
         text: action.trim().replace(/^\d+[\.\)]\s*/, ""),
         checked: false,
       }))
-    )
-  );
+    );
+
+    try {
+      const saved = localStorage.getItem(CHECKLIST_KEY);
+      if (saved) {
+        const checkedIds = JSON.parse(saved) as string[];
+        return defaultItems.map(item => ({
+          ...item,
+          checked: checkedIds.includes(item.id)
+        }));
+      }
+    } catch { /* ignore */ }
+
+    return defaultItems;
+  });
+
+  useEffect(() => {
+    const checkedIds = items.filter(i => i.checked).map(i => i.id);
+    localStorage.setItem(CHECKLIST_KEY, JSON.stringify(checkedIds));
+  }, [items]);
 
   const toggle = (id: string) =>
     setItems((prev) => prev.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)));

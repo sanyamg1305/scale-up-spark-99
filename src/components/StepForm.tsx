@@ -377,8 +377,6 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
   const next = () => {
     if (currentIndex < total - 1) setCurrentIndex(currentIndex + 1);
     else {
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(STEP_KEY);
       onSubmit(data);
     }
   };
