@@ -10,21 +10,32 @@ import { STORAGE_KEYS } from "@/lib/constants";
 type Screen = "landing" | "form" | "analyzing" | "results";
 
 const Index = () => {
+  const [result, setResult] = useState<DiagnosisResult | null>(() => {
+    try {
+      const savedResult = localStorage.getItem(STORAGE_KEYS.RESULT);
+      return savedResult ? JSON.parse(savedResult) : null;
+    } catch {
+      return null;
+    }
+  });
+
   const [screen, setScreen] = useState<Screen>(() => {
     try {
       const savedScreen = localStorage.getItem(STORAGE_KEYS.SCREEN);
       const savedResult = localStorage.getItem(STORAGE_KEYS.RESULT);
 
-      // If we were on results and we have the result data, stay there
-      if (savedScreen === "results" && savedResult) {
+      // SOURCE OF TRUTH: If we have a result, we should show the results screen
+      // regardless of what the screen key says (unless it's explicitly been cleared)
+      if (savedResult) {
         try {
           JSON.parse(savedResult);
           return "results";
         } catch { /* corrupted result, fall back */ }
       }
 
-      // If we were on the form or analyzing, go back to form
-      if (savedScreen === "form" || savedScreen === "analyzing") {
+      // If we were analyzing, we lost the connection, so go back to form
+      // but don't worry, the form data is still in localStorage
+      if (savedScreen === "analyzing" || savedScreen === "form") {
         return "form";
       }
 
@@ -45,15 +56,6 @@ const Index = () => {
       console.error("LocalStorage error on init:", e);
     }
     return "landing";
-  });
-
-  const [result, setResult] = useState<DiagnosisResult | null>(() => {
-    try {
-      const savedResult = localStorage.getItem(STORAGE_KEYS.RESULT);
-      return savedResult ? JSON.parse(savedResult) : null;
-    } catch {
-      return null;
-    }
   });
 
   // Persist screen state
@@ -87,7 +89,7 @@ const Index = () => {
       });
 
       if (error) {
-        toast.error(error.message || "Something went wrong.");
+        toast.error(error.message || "Analysis failed. Please try again.");
         setScreen("form");
         return;
       }
@@ -99,18 +101,15 @@ const Index = () => {
       }
 
       // Small delay for the "analyzing" feel
-      await new Promise((r) => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 1500));
       
-      // Clear form data once we have successfully received results
-      try {
-        localStorage.removeItem(STORAGE_KEYS.FORM_DATA);
-        localStorage.removeItem(STORAGE_KEYS.FORM_STEP);
-      } catch { /* ignore */ }
+      // Note: We NO LONGER clear form data here. 
+      // We keep it until the user clicks "Begin Another Reflection"
       
       setResult(res as DiagnosisResult);
       setScreen("results");
     } catch {
-      toast.error("Failed to connect. Please try again.");
+      toast.error("Failed to connect. Please check your connection and try again.");
       setScreen("form");
     }
   };
@@ -128,19 +127,27 @@ const Index = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-background text-foreground">
       {screen === "landing" && <LandingScreen onStart={() => setScreen("form")} />}
       {screen === "form" && (
         <StepForm 
           onSubmit={handleSubmit} 
-          onBack={() => setScreen("landing")} // No longer calling restart() here
+          onBack={() => setScreen("landing")}
         />
       )}
       {screen === "analyzing" && <AnalyzingScreen />}
-      {screen === "results" && result && (
+      {screen === "results" && result ? (
         <ResultsScreen result={result} onRestart={restart} />
-      )}
-    </>
+      ) : screen === "results" ? (
+        // Fallback if we somehow ended up on the results screen without a result
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center space-y-4">
+            <p className="text-muted-foreground">No result found. Please try the reflection again.</p>
+            <button onClick={restart} className="text-primary hover:underline">Return to start</button>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 };
 
