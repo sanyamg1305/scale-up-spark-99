@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import { toast } from "sonner";
+import { STORAGE_KEYS } from "@/lib/constants";
 
 import {
   Tooltip,
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/tooltip";
 
 export interface FormData {
+// ... (lines 14-52 remain the same)
   revenue_trend: string;
   growth_speed: string;
   team_motivation: string;
@@ -50,14 +52,12 @@ const INITIAL: FormData = {
   situation: "",
 };
 
-const STORAGE_KEY = "skc-form-data";
-const STEP_KEY = "skc-form-step";
-
 interface StepFormProps {
   onSubmit: (data: FormData) => void;
   onBack: () => void;
 }
 
+// ... (lines 61-315 remain the same)
 interface OptionItem {
   label: string;
   tooltip: string;
@@ -315,49 +315,68 @@ steps.forEach((step, si) => {
 
 const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
   const [currentIndex, setCurrentIndex] = useState(() => {
-    const saved = localStorage.getItem(STEP_KEY);
-    return saved ? Math.min(parseInt(saved, 10), flatSteps.length - 1) : 0;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.FORM_STEP);
+      return saved ? Math.min(parseInt(saved, 10), flatSteps.length - 1) : 0;
+    } catch {
+      return 0;
+    }
   });
+  
   const [data, setData] = useState<FormData>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.FORM_DATA);
+      if (saved) {
         const parsed = JSON.parse(saved);
         return { ...INITIAL, ...parsed };
-      } catch { /* ignore */ }
-    }
+      }
+    } catch { /* ignore */ }
     return INITIAL;
   });
+  
   const [restored, setRestored] = useState(false);
 
   // Show restored message on mount
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.FORM_DATA);
+      if (saved) {
         const parsed = JSON.parse(saved);
         const hasData = Object.values(parsed).some((v) => v !== "");
         if (hasData) {
           setRestored(true);
           toast.info("Your previous inputs have been restored");
         }
-      } catch { /* ignore */ }
-    }
+      }
+    } catch { /* ignore */ }
   }, []);
 
   // Auto-save data and step
-  const updateData = useCallback((newData: FormData) => {
-    setData(newData);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+  const updateData = useCallback((newData: FormData | ((prev: FormData) => FormData)) => {
+    setData((prev) => {
+      const resolved = typeof newData === "function" ? newData(prev) : newData;
+      try {
+        localStorage.setItem(STORAGE_KEYS.FORM_DATA, JSON.stringify(resolved));
+      } catch (e) {
+        console.error("Failed to auto-save form data:", e);
+      }
+      return resolved;
+    });
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(STEP_KEY, String(currentIndex));
+    try {
+      localStorage.setItem(STORAGE_KEYS.FORM_STEP, String(currentIndex));
+    } catch (e) {
+      console.error("Failed to auto-save form step:", e);
+    }
   }, [currentIndex]);
 
   const startFresh = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(STEP_KEY);
+    try {
+      localStorage.removeItem(STORAGE_KEYS.FORM_DATA);
+      localStorage.removeItem(STORAGE_KEYS.FORM_STEP);
+    } catch { /* ignore */ }
     setData(INITIAL);
     setCurrentIndex(0);
     setRestored(false);
@@ -367,12 +386,6 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
   const current = flatSteps[currentIndex];
   const total = flatSteps.length;
   const progress = ((currentIndex + 1) / total) * 100;
-
-  const canProceed = () => {
-    if (current.hasTextarea) return true;
-    if (current.question) return data[current.question.key] !== "";
-    return true;
-  };
 
   const next = () => {
     if (currentIndex < total - 1) setCurrentIndex(currentIndex + 1);
@@ -387,9 +400,12 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
   };
 
   const selectOption = (key: keyof FormData, value: string) => {
-    updateData({ ...data, [key]: value });
+    updateData((prev) => ({ ...prev, [key]: value }));
     setTimeout(() => {
-      if (currentIndex < total - 1) setCurrentIndex(currentIndex + 1);
+      setCurrentIndex((prevIdx) => {
+        if (prevIdx < total - 1) return prevIdx + 1;
+        return prevIdx;
+      });
     }, 300);
   };
 
@@ -498,7 +514,7 @@ const StepForm = ({ onSubmit, onBack }: StepFormProps) => {
                 </p>
                 <textarea
                   value={data.situation}
-                  onChange={(e) => updateData({ ...data, situation: e.target.value })}
+                  onChange={(e) => updateData((prev) => ({ ...prev, situation: e.target.value }))}
                   placeholder="Revenue is growing but my team keeps leaving. I am working long hours and things do not feel sustainable…"
                   className="w-full min-h-[180px] rounded-xl border-2 border-border bg-card px-5 py-4 text-base text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary focus:ring-0 resize-y font-body transition-colors"
                 />

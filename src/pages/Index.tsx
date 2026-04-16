@@ -5,54 +5,51 @@ import StepForm, { type FormData } from "@/components/StepForm";
 import AnalyzingScreen from "@/components/AnalyzingScreen";
 import ResultsScreen, { type DiagnosisResult } from "@/components/ResultsScreen";
 import { toast } from "sonner";
+import { STORAGE_KEYS } from "@/lib/constants";
 
 type Screen = "landing" | "form" | "analyzing" | "results";
 
-const SCREEN_KEY = "skc-current-screen";
-const RESULT_KEY = "skc-diagnosis-result";
-const FORM_DATA_KEY = "skc-form-data";
-const FORM_STEP_KEY = "skc-form-step";
-
 const Index = () => {
   const [screen, setScreen] = useState<Screen>(() => {
-    const savedScreen = localStorage.getItem(SCREEN_KEY);
-    const savedResult = localStorage.getItem(RESULT_KEY);
-
-    // If we were on results and we have the result data, stay there
-    if (savedScreen === "results" && savedResult) {
-      try {
-        JSON.parse(savedResult);
-        return "results";
-      } catch { /* corrupted result, fall back */ }
-    }
-
-    // If we were on the form or analyzing, go to form
-    // (If analyzing, the request was lost, so we go back to form to re-submit)
-    if (savedScreen === "form" || savedScreen === "analyzing") {
-      return "form";
-    }
-
     try {
-      const savedData = localStorage.getItem(FORM_DATA_KEY);
-      const savedStep = localStorage.getItem(FORM_STEP_KEY);
+      const savedScreen = localStorage.getItem(STORAGE_KEYS.SCREEN);
+      const savedResult = localStorage.getItem(STORAGE_KEYS.RESULT);
+
+      // If we were on results and we have the result data, stay there
+      if (savedScreen === "results" && savedResult) {
+        try {
+          JSON.parse(savedResult);
+          return "results";
+        } catch { /* corrupted result, fall back */ }
+      }
+
+      // If we were on the form or analyzing, go back to form
+      if (savedScreen === "form" || savedScreen === "analyzing") {
+        return "form";
+      }
+
+      const savedData = localStorage.getItem(STORAGE_KEYS.FORM_DATA);
+      const savedStep = localStorage.getItem(STORAGE_KEYS.FORM_STEP);
       
       if (savedData) {
-        const parsed = JSON.parse(savedData);
-        const hasData = Object.values(parsed).some((v) => v !== "");
-        if (hasData) return "form";
+        try {
+          const parsed = JSON.parse(savedData);
+          const hasData = Object.values(parsed).some((v) => v !== "");
+          if (hasData) return "form";
+        } catch { /* ignore */ }
       }
       if (savedStep && parseInt(savedStep, 10) > 0) {
         return "form";
       }
-    } catch {
-      // Ignore parse errors
+    } catch (e) {
+      console.error("LocalStorage error on init:", e);
     }
     return "landing";
   });
 
   const [result, setResult] = useState<DiagnosisResult | null>(() => {
     try {
-      const savedResult = localStorage.getItem(RESULT_KEY);
+      const savedResult = localStorage.getItem(STORAGE_KEYS.RESULT);
       return savedResult ? JSON.parse(savedResult) : null;
     } catch {
       return null;
@@ -61,15 +58,23 @@ const Index = () => {
 
   // Persist screen state
   useEffect(() => {
-    localStorage.setItem(SCREEN_KEY, screen);
+    try {
+      localStorage.setItem(STORAGE_KEYS.SCREEN, screen);
+    } catch (e) {
+      console.error("Failed to save screen state:", e);
+    }
   }, [screen]);
 
   // Persist result state
   useEffect(() => {
-    if (result) {
-      localStorage.setItem(RESULT_KEY, JSON.stringify(result));
-    } else {
-      localStorage.removeItem(RESULT_KEY);
+    try {
+      if (result) {
+        localStorage.setItem(STORAGE_KEYS.RESULT, JSON.stringify(result));
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.RESULT);
+      }
+    } catch (e) {
+      console.error("Failed to save result state:", e);
     }
   }, [result]);
 
@@ -97,8 +102,10 @@ const Index = () => {
       await new Promise((r) => setTimeout(r, 2000));
       
       // Clear form data once we have successfully received results
-      localStorage.removeItem(FORM_DATA_KEY);
-      localStorage.removeItem(FORM_STEP_KEY);
+      try {
+        localStorage.removeItem(STORAGE_KEYS.FORM_DATA);
+        localStorage.removeItem(STORAGE_KEYS.FORM_STEP);
+      } catch { /* ignore */ }
       
       setResult(res as DiagnosisResult);
       setScreen("results");
@@ -109,11 +116,13 @@ const Index = () => {
   };
 
   const restart = () => {
-    localStorage.removeItem(SCREEN_KEY);
-    localStorage.removeItem(RESULT_KEY);
-    localStorage.removeItem(FORM_DATA_KEY);
-    localStorage.removeItem(FORM_STEP_KEY);
-    localStorage.removeItem("skc-checklist-state");
+    try {
+      localStorage.removeItem(STORAGE_KEYS.SCREEN);
+      localStorage.removeItem(STORAGE_KEYS.RESULT);
+      localStorage.removeItem(STORAGE_KEYS.FORM_DATA);
+      localStorage.removeItem(STORAGE_KEYS.FORM_STEP);
+      localStorage.removeItem(STORAGE_KEYS.CHECKLIST);
+    } catch { /* ignore */ }
     setResult(null);
     setScreen("landing");
   };
@@ -121,11 +130,16 @@ const Index = () => {
   return (
     <>
       {screen === "landing" && <LandingScreen onStart={() => setScreen("form")} />}
-      {screen === "form" && <StepForm onSubmit={handleSubmit} onBack={() => {
-        restart(); // Going back from first step clears everything
-      }} />}
+      {screen === "form" && (
+        <StepForm 
+          onSubmit={handleSubmit} 
+          onBack={() => setScreen("landing")} // No longer calling restart() here
+        />
+      )}
       {screen === "analyzing" && <AnalyzingScreen />}
-      {screen === "results" && result && <ResultsScreen result={result} onRestart={restart} />}
+      {screen === "results" && result && (
+        <ResultsScreen result={result} onRestart={restart} />
+      )}
     </>
   );
 };

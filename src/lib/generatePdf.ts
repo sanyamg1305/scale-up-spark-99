@@ -19,13 +19,18 @@ export async function generateReport(result: DiagnosisResult) {
     }
   };
 
-  const heading = (text: string, emoji: string) => {
+  const heading = (text: string) => {
     checkPage(16);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.setTextColor(...gold);
-    doc.text(`${emoji}  ${text.toUpperCase()}`, margin, y);
-    y += 3;
+    
+    // Draw a decorative marker instead of emoji
+    doc.setFillColor(...gold);
+    doc.rect(margin, y - 4, 3, 3, "F");
+    
+    doc.text(text.toUpperCase(), margin + 6, y - 1);
+    y += 2;
     doc.setDrawColor(...gold);
     doc.setLineWidth(0.4);
     doc.line(margin, y, margin + contentW, y);
@@ -48,38 +53,43 @@ export async function generateReport(result: DiagnosisResult) {
     doc.setTextColor(...dark);
     const lines = doc.splitTextToSize(text, contentW - 8);
     checkPage(lines.length * 5 + 2);
-    doc.text("•", margin + 2, y);
+    doc.text("-", margin + 2, y); // Using simple dash instead of bullet symbol
     doc.text(lines, margin + 8, y);
     y += lines.length * 5 + 3;
   };
 
-  // Header
+  // Header Background
   doc.setFillColor(15, 15, 15);
-  doc.rect(0, 0, W, 45, "F");
+  doc.rect(0, 0, W, 50, "F");
 
+  // Logo (Centered)
   try {
     const imgData = await fetch("/logo.png").then((res) => res.arrayBuffer());
     const uint8Array = new Uint8Array(imgData);
-    doc.addImage(uint8Array, "PNG", margin, 10, 20, 20);
+    const logoSize = 18;
+    doc.addImage(uint8Array, "PNG", (W - logoSize) / 2, 8, logoSize, logoSize);
   } catch (err) {
     console.error("Failed to load logo for PDF", err);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
+    doc.setFontSize(16);
     doc.setTextColor(255, 255, 255);
-    doc.text("SKC.World", margin, 18);
+    doc.text("SKC.WORLD", W / 2, 18, { align: "center" });
   }
 
+  // Header Text (Centered)
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
+  doc.setFontSize(11);
   doc.setTextColor(...gold);
-  doc.text("Your Success | Scale | Joy Reflection Report", margin, 32);
+  doc.text("Success | Scale | Joy Reflection Report", W / 2, 34, { align: "center" });
+  
   doc.setFontSize(8);
   doc.setTextColor(160, 160, 160);
-  doc.text(`Generated: ${new Date().toLocaleDateString()}`, margin, 36);
-  y = 55;
+  doc.text(`Generated: ${new Date().toLocaleDateString()}`, W / 2, 40, { align: "center" });
+  
+  y = 65;
 
   // Summary
-  heading("Summary", "📊");
+  heading("Summary");
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(...dark);
@@ -97,12 +107,12 @@ export async function generateReport(result: DiagnosisResult) {
   y += 10;
 
   // What May Be Noticed
-  heading("What May Be Noticed", "🧠");
+  heading("What May Be Noticed");
   result.insights.forEach((i) => bullet(i));
   y += 4;
 
   // What May Be Unresolved
-  heading("What May Be Unresolved", "⚠️");
+  heading("What May Be Unresolved");
   result.business_leaks.forEach((leak) => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
@@ -119,7 +129,7 @@ export async function generateReport(result: DiagnosisResult) {
   y += 2;
 
   // Areas to Examine
-  heading("Areas to Examine", "🎯");
+  heading("Areas to Examine");
   result.quest_chain.forEach((quest) => {
     checkPage(24);
     doc.setFont("helvetica", "bold");
@@ -137,7 +147,7 @@ export async function generateReport(result: DiagnosisResult) {
   });
 
   // Action Checklist
-  heading("Checklist", "✅");
+  heading("Action Checklist");
   result.quest_chain.forEach((quest) => {
     const actions = quest.action.split(/[.;]\s*/).filter(Boolean);
     actions.forEach((a) => {
@@ -145,7 +155,11 @@ export async function generateReport(result: DiagnosisResult) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setTextColor(...dark);
+      // Small square for checkbox
+      doc.setDrawColor(...muted);
+      doc.setLineWidth(0.2);
       doc.rect(margin + 2, y - 3.5, 3.5, 3.5);
+      
       const lines = doc.splitTextToSize(a.trim().replace(/^\d+[\.\)]\s*/, ""), contentW - 12);
       doc.text(lines, margin + 9, y);
       y += lines.length * 5 + 3;
@@ -154,12 +168,12 @@ export async function generateReport(result: DiagnosisResult) {
   y += 4;
 
   // What This May Mean
-  heading("What This May Mean for You", "🌱");
+  heading("What This May Mean for You");
   bodyText(result.future_warning);
   y += 4;
 
   // Path Toward Success | Scale | Joy
-  heading("Path Toward Success | Scale | Joy", "🚀");
+  heading("Path Toward Success | Scale | Joy");
   result.path_to_success_scale_joy.forEach((step, i) => {
     checkPage(8);
     doc.setFont("helvetica", "bold");
@@ -183,8 +197,8 @@ export async function generateReport(result: DiagnosisResult) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(...muted);
-  doc.text("SKC.World - Based on the Conscious Entrepreneurship Quadrant© framework.", margin, y);
-  doc.text("Ready for Step 2? Book your Leadership Reflection Call", margin, y + 5);
+  doc.text("SKC.World - Based on the Conscious Entrepreneurship Quadrant framework.", margin, y);
+  doc.text("Interested in a Guided Conversation? Book your Leadership Reflection Call.", margin, y + 5);
 
   doc.save("Success-Scale-Joy-Reflection-Report.pdf");
 }

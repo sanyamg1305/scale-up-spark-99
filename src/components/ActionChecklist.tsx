@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { STORAGE_KEYS } from "@/lib/constants";
 
 interface ChecklistItem {
   id: string;
@@ -11,20 +12,27 @@ interface ActionChecklistProps {
   quests: { level: number; name: string; action: string }[];
 }
 
-const CHECKLIST_KEY = "skc-checklist-state";
-
 const ActionChecklist = ({ quests }: ActionChecklistProps) => {
-  const [items, setItems] = useState<ChecklistItem[]>(() => {
-    const defaultItems = quests.flatMap((quest, qi) =>
-      quest.action.split(/[.;]\s*/).filter(Boolean).map((action, ai) => ({
-        id: `${qi}-${ai}`,
-        text: action.trim().replace(/^\d+[\.\)]\s*/, ""),
-        checked: false,
-      }))
+  // Generate default items from quests
+  const defaultItems = useMemo(() => {
+    return quests.flatMap((quest, qi) =>
+      quest.action.split(/[.;]\s*/).filter(Boolean).map((action, ai) => {
+        const text = action.trim().replace(/^\d+[\.\)]\s*/, "");
+        // Create a more stable ID using the text content (first 30 chars) and indices
+        // This helps maintain state if quests are slightly modified but labels stay similar
+        const contentHash = text.slice(0, 30).replace(/\s+/g, "");
+        return {
+          id: `${qi}-${ai}-${contentHash}`,
+          text,
+          checked: false,
+        };
+      })
     );
+  }, [quests]);
 
+  const [items, setItems] = useState<ChecklistItem[]>(() => {
     try {
-      const saved = localStorage.getItem(CHECKLIST_KEY);
+      const saved = localStorage.getItem(STORAGE_KEYS.CHECKLIST);
       if (saved) {
         const checkedIds = JSON.parse(saved) as string[];
         return defaultItems.map(item => ({
@@ -33,13 +41,32 @@ const ActionChecklist = ({ quests }: ActionChecklistProps) => {
         }));
       }
     } catch { /* ignore */ }
-
     return defaultItems;
   });
 
+  // Keep items in sync with quests prop changes (e.g. after a reload)
   useEffect(() => {
-    const checkedIds = items.filter(i => i.checked).map(i => i.id);
-    localStorage.setItem(CHECKLIST_KEY, JSON.stringify(checkedIds));
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.CHECKLIST);
+      const checkedIds = saved ? (JSON.parse(saved) as string[]) : [];
+      
+      setItems(defaultItems.map(item => ({
+        ...item,
+        checked: checkedIds.includes(item.id)
+      })));
+    } catch {
+      setItems(defaultItems);
+    }
+  }, [defaultItems]);
+
+  // Persist checked state
+  useEffect(() => {
+    try {
+      const checkedIds = items.filter(i => i.checked).map(i => i.id);
+      localStorage.setItem(STORAGE_KEYS.CHECKLIST, JSON.stringify(checkedIds));
+    } catch (e) {
+      console.error("Failed to save checklist state:", e);
+    }
   }, [items]);
 
   const toggle = (id: string) =>
