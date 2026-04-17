@@ -66,8 +66,9 @@ export async function generateReport(result: DiagnosisResult) {
   try {
     const imgData = await fetch("/logo.png").then((res) => res.arrayBuffer());
     const uint8Array = new Uint8Array(imgData);
-    const logoSize = 18;
-    doc.addImage(uint8Array, "PNG", (W - logoSize) / 2, 8, logoSize, logoSize);
+    const logoWidth = 35;
+    const logoHeight = 18;
+    doc.addImage(uint8Array, "PNG", (W - logoWidth) / 2, 8, logoWidth, logoHeight);
   } catch (err) {
     console.error("Failed to load logo for PDF", err);
     doc.setFont("helvetica", "bold");
