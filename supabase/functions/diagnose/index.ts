@@ -5,11 +5,232 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+type Diagnosis = {
+  state: "Burnout" | "Survival" | "Stagnation" | "Success | Scale | Joy";
+  identity: "The Overloaded Operator" | "The Stuck Dreamer" | "The Comfortable Drifter" | "The Aligned Scaler";
+  entrepreneurship_score: number;
+  consciousness_score: number;
+  insights: string[];
+  business_leaks: { type: string; description: string }[];
+  quest_chain: { level: number; name: string; objective: string; action: string; reward: string }[];
+  future_warning: string;
+  path_to_success_scale_joy: string[];
+};
+
+const clamp = (value: number, min = 0, max = 100) => Math.min(max, Math.max(min, value));
+
+const normalizeText = (value: unknown) => String(value ?? "").trim().toLowerCase();
+
+const scoreFromText = (value: unknown, positiveWords: string[], negativeWords: string[]) => {
+  const text = normalizeText(value);
+  if (!text) return 0;
+
+  let score = 0;
+  for (const word of positiveWords) {
+    if (text.includes(word)) score += 1;
+  }
+  for (const word of negativeWords) {
+    if (text.includes(word)) score -= 1;
+  }
+
+  return score;
+};
+
+const buildFallbackDiagnosis = (body: Record<string, unknown>): Diagnosis => {
+  const executionSignals = [
+    scoreFromText(body.revenue_trend, ["growing", "strong", "up", "improving", "healthy", "steady"], ["declin", "down", "weak", "stalled", "flat", "slow"]),
+    scoreFromText(body.growth_speed, ["fast", "strong", "quick", "accelerating"], ["slow", "stuck", "unclear", "lagging"]),
+    scoreFromText(body.process_clarity, ["clear", "structured", "consistent"], ["unclear", "messy", "chaotic", "reactive"]),
+    scoreFromText(body.firefighting_frequency, ["rare", "low", "seldom"], ["often", "frequent", "daily", "constant"]),
+    scoreFromText(body.priority_management, ["clear", "focused", "steady"], ["scattered", "reactive", "unclear", "changing"]),
+    scoreFromText(body.delegation_level, ["high", "shared", "strong"], ["low", "limited", "founder"]),
+  ];
+
+  const alignmentSignals = [
+    scoreFromText(body.team_motivation, ["high", "strong", "energized", "engaged"], ["low", "tired", "flat", "drained"]),
+    scoreFromText(body.team_stability, ["stable", "strong", "consistent"], ["mixed", "unstable", "fragile", "turnover"]),
+    scoreFromText(body.team_feedback, ["open", "honest", "healthy"], ["guarded", "closed", "avoided"]),
+    scoreFromText(body.team_ownership, ["high", "shared", "strong"], ["low", "limited", "unclear"]),
+    scoreFromText(body.founder_dependency, ["low", "shared", "distributed"], ["high", "central", "dependent"]),
+    scoreFromText(body.decision_making, ["clear", "shared", "calm"], ["bottleneck", "reactive", "unclear"]),
+    scoreFromText(body.vision_clarity, ["clear", "strong", "shared"], ["unclear", "fuzzy", "mixed"]),
+    scoreFromText(body.daily_routine, ["clear", "steady", "structured"], ["chaotic", "reactive", "scattered"]),
+    scoreFromText(body.stress_level, ["low", "managed", "steady"], ["high", "overwhelming", "constant"]),
+    scoreFromText(body.emotional_control, ["steady", "calm", "grounded"], ["reactive", "strained", "volatile"]),
+  ];
+
+  const entrepreneurship_score = clamp(50 + executionSignals.reduce((sum, value) => sum + value, 0) * 8);
+  const consciousness_score = clamp(50 + alignmentSignals.reduce((sum, value) => sum + value, 0) * 6);
+
+  const state: Diagnosis["state"] = entrepreneurship_score > 60 && consciousness_score < 40
+    ? "Burnout"
+    : entrepreneurship_score < 40 && consciousness_score < 40
+      ? "Survival"
+      : entrepreneurship_score < 40 && consciousness_score > 60
+        ? "Stagnation"
+        : entrepreneurship_score > 60 && consciousness_score > 60
+          ? "Success | Scale | Joy"
+          : entrepreneurship_score >= consciousness_score
+            ? "Burnout"
+            : "Stagnation";
+
+  const identityByState: Record<Diagnosis["state"], Diagnosis["identity"]> = {
+    Burnout: "The Overloaded Operator",
+    Survival: "The Stuck Dreamer",
+    Stagnation: "The Comfortable Drifter",
+    "Success | Scale | Joy": "The Aligned Scaler",
+  };
+
+  const insightsByState: Record<Diagnosis["state"], string[]> = {
+    Burnout: [
+      "There are moments where movement appears strong, yet the weight of keeping everything moving may still sit close to you.",
+      "It may appear that progress is happening alongside a steady pull toward reaction rather than reflection.",
+      "One possible pattern could be that the business is producing energy, while clarity is finding it harder to keep pace.",
+    ],
+    Survival: [
+      "There are moments where both momentum and clarity may be asking for more steadiness than the system can currently hold.",
+      "It seems as though a lot of attention may be going toward getting through the day, rather than shaping what comes next.",
+      "One possible pattern could be that the business is carrying effort, though not yet receiving enough structure back from that effort.",
+    ],
+    Stagnation: [
+      "It may appear that there is thoughtfulness in the system, though movement may not yet be meeting that clarity.",
+      "There are moments where people may understand what matters, while action still feels slower or more cautious than expected.",
+      "One possible pattern could be that the business has signal and awareness, yet energy is not consistently converting into traction.",
+    ],
+    "Success | Scale | Joy": [
+      "It seems as though clarity and motion may be supporting each other more often than competing with each other.",
+      "There are moments where the system appears able to move without asking one person to hold every thread at once.",
+      "One possible pattern could be that the business is beginning to create progress with more coherence and less internal friction.",
+    ],
+  };
+
+  const leaksByState: Record<Diagnosis["state"], Diagnosis["business_leaks"]> = {
+    Burnout: [
+      { type: "Systems Gap", description: "It may appear that output is asking the current systems to carry more than they were designed to hold." },
+      { type: "Energy Gap", description: "There are moments where the business seems to rely on personal intensity more than sustainable rhythm." },
+      { type: "Culture Gap", description: "Shared ownership may be present in parts, though it may not yet feel evenly distributed." },
+    ],
+    Survival: [
+      { type: "Vision Gap", description: "Clarity around the next horizon may feel harder to access while immediate pressures stay loud." },
+      { type: "Systems Gap", description: "Some of the strain may come from essentials still living in memory, urgency, or personal oversight." },
+      { type: "Energy Gap", description: "The available energy in the system may be going toward protection more than forward movement." },
+    ],
+    Stagnation: [
+      { type: "Vision Gap", description: "The vision may be understood, though it may not yet be turning into strong shared motion." },
+      { type: "Systems Gap", description: "There are moments where structure looks present, yet not fully alive in day-to-day behavior." },
+      { type: "Culture Gap", description: "Ownership may be understood conceptually, while confidence to act may still be uneven." },
+    ],
+    "Success | Scale | Joy": [
+      { type: "Systems Gap", description: "As the system grows, some parts may still be adjusting to a wider pace and higher trust." },
+      { type: "Culture Gap", description: "There may be an opportunity to keep reinforcing shared ownership as complexity increases." },
+      { type: "Vision Gap", description: "Even in a healthy state, it may be worth noticing where the next layer of clarity wants to emerge." },
+    ],
+  };
+
+  const quest_chain: Diagnosis["quest_chain"] = [
+    {
+      level: 1,
+      name: "Begin Here",
+      objective: "Notice where the business is asking for steadiness before more speed.",
+      action: "Take a quiet look at where decisions, updates, or approvals tend to bottleneck. Notice what repeats most often in a week.",
+      reward: "A clearer sense of where pressure may actually be coming from.",
+    },
+    {
+      level: 2,
+      name: "Build On This",
+      objective: "Observe how clarity is currently shared across people, priorities, and routines.",
+      action: "Review where expectations feel clear and where they still depend on interpretation. Notice what becomes easier when ownership is named more clearly.",
+      reward: "More visible alignment between intention and execution.",
+    },
+    {
+      level: 3,
+      name: "Go Deeper",
+      objective: "Examine what kind of leadership rhythm the current stage of the business may be asking for.",
+      action: "Look at what still depends heavily on your presence. Reflect on what may be ready to become shared, simpler, or more consistent.",
+      reward: "A stronger path toward scale with less strain.",
+    },
+  ];
+
+  const futureByState: Record<Diagnosis["state"], string> = {
+    Burnout: "It may appear that the business carries real movement, though that movement may still come with a cost that is felt quietly behind the scenes. What is working may be real. What is tiring may also be real. This may be worth examining with care.",
+    Survival: "It seems as though the system may be working hard to hold itself together before it can fully open into growth. There may already be important strengths here. They may simply need more space, sequence, and steadiness to become visible.",
+    Stagnation: "It may appear that understanding is present, while momentum is arriving more slowly than the vision suggests. Something valuable may already be here. This may be an invitation to notice what would help energy move with more confidence.",
+    "Success | Scale | Joy": "It seems as though the business may be entering a more coherent season, where clarity and momentum can support each other. What is working may deserve to be protected as complexity grows. This may be a useful moment to notice what wants to mature next.",
+  };
+
+  const pathByState: Record<Diagnosis["state"], string[]> = {
+    Burnout: [
+      "Notice where pace may be outrunning clarity.",
+      "Examine what still depends on your constant intervention.",
+      "Look for the places where shared ownership may want more structure.",
+    ],
+    Survival: [
+      "Notice what most often pulls attention away from longer-range clarity.",
+      "Examine which routines feel dependable and which still feel improvised.",
+      "Look for small signs of energy that could become stable momentum.",
+    ],
+    Stagnation: [
+      "Notice where clarity is present but action still feels hesitant.",
+      "Examine how priorities move from intention into daily rhythm.",
+      "Look for places where confidence and ownership may want more reinforcement.",
+    ],
+    "Success | Scale | Joy": [
+      "Notice what is helping momentum feel sustainable.",
+      "Examine which patterns are creating trust across the system.",
+      "Look for what wants to evolve before strain quietly returns.",
+    ],
+  };
+
+  return {
+    state,
+    identity: identityByState[state],
+    entrepreneurship_score,
+    consciousness_score,
+    insights: insightsByState[state],
+    business_leaks: leaksByState[state],
+    quest_chain,
+    future_warning: futureByState[state],
+    path_to_success_scale_joy: pathByState[state],
+  };
+};
+
+const extractDiagnosis = async (response: Response): Promise<Diagnosis | null> => {
+  const data = await response.json();
+  const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+
+  if (toolCall?.function?.arguments) {
+    return JSON.parse(toolCall.function.arguments) as Diagnosis;
+  }
+
+  const content = data.choices?.[0]?.message?.content;
+  if (typeof content === "string") {
+    try {
+      return JSON.parse(content) as Diagnosis;
+    } catch {
+      return null;
+    }
+  }
+
+  if (Array.isArray(content)) {
+    const textPart = content.find((item) => item?.type === "text" && typeof item.text === "string");
+    if (textPart?.text) {
+      try {
+        return JSON.parse(textPart.text) as Diagnosis;
+      } catch {
+        return null;
+      }
+    }
+  }
+
+  return null;
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const body = await req.json();
+      const body = await req.json();
+      const fallbackDiagnosis = buildFallbackDiagnosis(body as Record<string, unknown>);
 
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
@@ -166,33 +387,20 @@ Keep everything human, simple, and reflective. The user should feel seen, not ju
       }),
     });
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      if (!response.ok) {
+        if (response.status === 429 || response.status === 402) {
+          return new Response(JSON.stringify(fallbackDiagnosis), {
+            headers: { ...corsHeaders, "Content-Type": "application/json", "X-Diagnosis-Fallback": "true" },
+          });
+        }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI analysis failed" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        return new Response(JSON.stringify(fallbackDiagnosis), {
+          headers: { ...corsHeaders, "Content-Type": "application/json", "X-Diagnosis-Fallback": "true" },
       });
     }
 
-    const data = await response.json();
-    const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) {
-      return new Response(JSON.stringify({ error: "AI did not return structured output" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const diagnosis = JSON.parse(toolCall.function.arguments);
+      const diagnosis = await extractDiagnosis(response) ?? fallbackDiagnosis;
 
     if (diagnosis.state === "SSJ" || diagnosis.state === "Success | State | Joy") {
       diagnosis.state = "Success | Scale | Joy";
