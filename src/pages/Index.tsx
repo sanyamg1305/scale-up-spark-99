@@ -169,7 +169,7 @@ const Index = () => {
     }
   }, [screen]);
 
-  // Persist result state — only once the lead gate has been passed (results screen)
+  // Persist result state — save once we reach the results screen
   useEffect(() => {
     try {
       if (result && screen === "results") {
@@ -217,7 +217,7 @@ const Index = () => {
       // We keep it until the user clicks "Begin Another Reflection"
 
       setResult(normalizedResult);
-      setScreen("lead");
+      setScreen("results");
     } catch {
       toast.error("Failed to connect. Please check your connection and try again.");
       setScreen("form");
@@ -238,7 +238,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {screen === "landing" && <LandingScreen onStart={() => setScreen("form")} />}
+      {screen === "landing" && <LandingScreen onStart={() => setScreen("lead")} />}
       {screen === "form" && (
         <StepForm 
           onSubmit={handleSubmit} 
@@ -246,7 +246,7 @@ const Index = () => {
         />
       )}
       {screen === "analyzing" && <AnalyzingScreen />}
-      {screen === "lead" && <LeadGenForm onComplete={() => setScreen("results")} />}
+      {screen === "lead" && <LeadGenForm onComplete={() => setScreen("form")} />}
       {screen === "results" && result ? (
         <ResultsScreen result={result} onRestart={restart} />
       ) : screen === "results" ? (
