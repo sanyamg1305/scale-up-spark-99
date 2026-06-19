@@ -244,6 +244,7 @@ const Index = () => {
         />
       )}
       {screen === "analyzing" && <AnalyzingScreen />}
+      {screen === "lead" && <LeadGenForm onComplete={() => setScreen("results")} />}
       {screen === "results" && result ? (
         <ResultsScreen result={result} onRestart={restart} />
       ) : screen === "results" ? (
