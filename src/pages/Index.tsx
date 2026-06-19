@@ -215,7 +215,7 @@ const Index = () => {
       // We keep it until the user clicks "Begin Another Reflection"
 
       setResult(normalizedResult);
-      setScreen("results");
+      setScreen("lead");
     } catch {
       toast.error("Failed to connect. Please check your connection and try again.");
       setScreen("form");
