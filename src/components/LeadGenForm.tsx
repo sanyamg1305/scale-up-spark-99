@@ -75,13 +75,13 @@ const LeadGenForm = ({ onComplete }: LeadGenFormProps) => {
 
         <div className="text-center space-y-3">
           <p className="text-xs font-display uppercase tracking-[0.3em] text-primary">
-            One last step
+            Before we begin
           </p>
           <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
-            Your reflection is ready
+            A few details to personalize your reflection
           </h1>
           <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
-            Share a few details and your personalized reflection will appear.
+            Share a few details so we can tailor your Scale &amp; Clarity OS reflection.
           </p>
         </div>
 
@@ -133,10 +133,10 @@ const LeadGenForm = ({ onComplete }: LeadGenFormProps) => {
             {submitting ? (
               <>
                 <Loader2 className="animate-spin" size={18} />
-                Loading your reflection...
+                Saving...
               </>
             ) : (
-              "View My Reflection"
+              "Begin Reflection"
             )}
           </Button>
 
