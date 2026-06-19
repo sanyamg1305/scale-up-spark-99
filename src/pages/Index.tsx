@@ -4,10 +4,11 @@ import LandingScreen from "@/components/LandingScreen";
 import StepForm, { type FormData } from "@/components/StepForm";
 import AnalyzingScreen from "@/components/AnalyzingScreen";
 import ResultsScreen, { type DiagnosisResult } from "@/components/ResultsScreen";
+import LeadGenForm from "@/components/LeadGenForm";
 import { toast } from "sonner";
 import { STORAGE_KEYS } from "@/lib/constants";
 
-type Screen = "landing" | "form" | "analyzing" | "results";
+type Screen = "landing" | "form" | "analyzing" | "lead" | "results";
 
 const isString = (value: unknown): value is string => typeof value === "string";
 
