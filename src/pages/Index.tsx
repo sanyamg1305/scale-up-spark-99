@@ -4,10 +4,11 @@ import LandingScreen from "@/components/LandingScreen";
 import StepForm, { type FormData } from "@/components/StepForm";
 import AnalyzingScreen from "@/components/AnalyzingScreen";
 import ResultsScreen, { type DiagnosisResult } from "@/components/ResultsScreen";
+import LeadGenForm from "@/components/LeadGenForm";
 import { toast } from "sonner";
 import { STORAGE_KEYS } from "@/lib/constants";
 
-type Screen = "landing" | "form" | "analyzing" | "results";
+type Screen = "landing" | "form" | "analyzing" | "lead" | "results";
 
 const isString = (value: unknown): value is string => typeof value === "string";
 
@@ -166,18 +167,18 @@ const Index = () => {
     }
   }, [screen]);
 
-  // Persist result state
+  // Persist result state — only once the lead gate has been passed (results screen)
   useEffect(() => {
     try {
-      if (result) {
+      if (result && screen === "results") {
         localStorage.setItem(STORAGE_KEYS.RESULT, JSON.stringify(result));
-      } else {
+      } else if (!result) {
         localStorage.removeItem(STORAGE_KEYS.RESULT);
       }
     } catch (e) {
       console.error("Failed to save result state:", e);
     }
-  }, [result]);
+  }, [result, screen]);
 
   const handleSubmit = async (data: FormData) => {
     setScreen("analyzing");
@@ -214,7 +215,7 @@ const Index = () => {
       // We keep it until the user clicks "Begin Another Reflection"
 
       setResult(normalizedResult);
-      setScreen("results");
+      setScreen("lead");
     } catch {
       toast.error("Failed to connect. Please check your connection and try again.");
       setScreen("form");
@@ -243,6 +244,7 @@ const Index = () => {
         />
       )}
       {screen === "analyzing" && <AnalyzingScreen />}
+      {screen === "lead" && <LeadGenForm onComplete={() => setScreen("results")} />}
       {screen === "results" && result ? (
         <ResultsScreen result={result} onRestart={restart} />
       ) : screen === "results" ? (
