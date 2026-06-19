@@ -167,18 +167,18 @@ const Index = () => {
     }
   }, [screen]);
 
-  // Persist result state
+  // Persist result state — only once the lead gate has been passed (results screen)
   useEffect(() => {
     try {
-      if (result) {
+      if (result && screen === "results") {
         localStorage.setItem(STORAGE_KEYS.RESULT, JSON.stringify(result));
-      } else {
+      } else if (!result) {
         localStorage.removeItem(STORAGE_KEYS.RESULT);
       }
     } catch (e) {
       console.error("Failed to save result state:", e);
     }
-  }, [result]);
+  }, [result, screen]);
 
   const handleSubmit = async (data: FormData) => {
     setScreen("analyzing");
