@@ -133,9 +133,11 @@ const Index = () => {
         } catch { /* corrupted result, fall back */ }
       }
 
-      // If we were analyzing, we lost the connection, so go back to form
-      // but don't worry, the form data is still in localStorage
-      if (savedScreen === "analyzing" || savedScreen === "form") {
+      // If we were analyzing or on the form, we lost the connection, so go back to form
+      // but don't worry, publish form data is still in localStorage
+      if (savedScreen === "analyzing" || savedScreen === "form" || savedScreen === "lead") {
+        // If they completed the lead form but haven't started the questionnaire,
+        // send them to the form (lead data was already saved to the backend)
         return "form";
       }
 
